@@ -23,5 +23,10 @@
         <TextBlock x:Name="textBlockDistanceSensro2Value" HorizontalAlignment="Left" Margin="438,16,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="312,32,0,0" TextWrapping="Wrap" Text="Distance Sensor 2:" VerticalAlignment="Top"/>
         <TextBlock x:Name="textBlockDistanceSensro1Value" HorizontalAlignment="Left" Margin="438,32,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="636,16,0,0" TextWrapping="Wrap" Text="Standard Distance Sensor 1:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockStandardDistanceSensro2Value" HorizontalAlignment="Left" Margin="825,16,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="636,32,0,0" TextWrapping="Wrap" Text="Standard Distance Sensor 2:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockStandardDistanceSensro1Value" HorizontalAlignment="Left" Margin="825,32,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
+        <Button x:Name="buttonGetStandardDistances" Content="Get Standard Distances" HorizontalAlignment="Left" Margin="880,16,0,0" VerticalAlignment="Top" Click="buttonGetStandardDistances_Click"/>
     </Grid>
 </Page>
