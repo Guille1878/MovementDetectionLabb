@@ -8,25 +8,33 @@
     mc:Ignorable="d" Loaded="Page_Loaded">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="20">
-        <TextBlock HorizontalAlignment="Left" Margin="84,59,0,0" TextWrapping="Wrap" Text="In:" VerticalAlignment="Top" RenderTransformOrigin="0.215,3.172"/>
-        <TextBlock HorizontalAlignment="Left" Margin="72,79,0,0" TextWrapping="Wrap" Text="Out:" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="146,157,0,0" TextWrapping="Wrap" Text="In:" VerticalAlignment="Top" RenderTransformOrigin="0.215,3.172"/>
+        <TextBlock HorizontalAlignment="Left" Margin="134,177,0,0" TextWrapping="Wrap" Text="Out:" VerticalAlignment="Top"/>
         <Grid VerticalAlignment="Bottom" Height="200" Background="#B22D26CD" ScrollViewer.VerticalScrollMode="Auto" >
             <TextBlock Name="textBlockMessage" Margin="5" RequestedTheme="Dark"></TextBlock>
         </Grid>
-        <TextBlock Name="textBlockInValue" HorizontalAlignment="Left" Margin="103,59,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" FontWeight="Bold" Foreground="#FF64E040"/>
-        <TextBlock Name="textBlockOutValue" HorizontalAlignment="Left" Margin="103,79,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" FontWeight="Bold" Foreground="#FFECA054"/>
-        <TextBlock HorizontalAlignment="Left" Margin="15,107,0,0" TextWrapping="Wrap" Text="Total inside:" VerticalAlignment="Top" FontWeight="Bold"/>
-        <TextBlock x:Name="textBlockTotalInsideValue" HorizontalAlignment="Left" Margin="103,107,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" FontWeight="Bold" Foreground="#FF1750EE" FocusVisualPrimaryBrush="White"/>
+        <TextBlock Name="textBlockInValue" HorizontalAlignment="Left" Margin="165,157,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" FontWeight="Bold" Foreground="#FF64E040"/>
+        <TextBlock Name="textBlockOutValue" HorizontalAlignment="Left" Margin="165,177,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" FontWeight="Bold" Foreground="#FFECA054"/>
+        <TextBlock HorizontalAlignment="Left" Margin="77,205,0,0" TextWrapping="Wrap" Text="Total inside:" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock x:Name="textBlockTotalInsideValue" HorizontalAlignment="Left" Margin="165,205,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" FontWeight="Bold" Foreground="#FF1750EE" FocusVisualPrimaryBrush="White"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Time:" VerticalAlignment="Top"/>
         <TextBlock x:Name="textBlockTimeValue" HorizontalAlignment="Left" Margin="51,10,0,0" TextWrapping="Wrap" Text="0s" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="312,16,0,0" TextWrapping="Wrap" Text="Distance Sensor 1:" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textBlockDistanceSensro2Value" HorizontalAlignment="Left" Margin="438,16,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="312,32,0,0" TextWrapping="Wrap" Text="Distance Sensor 2:" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textBlockDistanceSensro1Value" HorizontalAlignment="Left" Margin="438,32,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="636,16,0,0" TextWrapping="Wrap" Text="Standard Distance Sensor 1:" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textBlockStandardDistanceSensro2Value" HorizontalAlignment="Left" Margin="825,16,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="636,32,0,0" TextWrapping="Wrap" Text="Standard Distance Sensor 2:" VerticalAlignment="Top"/>
-        <TextBlock x:Name="textBlockStandardDistanceSensro1Value" HorizontalAlignment="Left" Margin="825,32,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
-        <Button x:Name="buttonGetStandardDistances" Content="Get Standard Distances" HorizontalAlignment="Left" Margin="880,16,0,0" VerticalAlignment="Top" Click="buttonGetStandardDistances_Click"/>
+        <TextBlock x:Name="textBlockDistanceSensro1Value" HorizontalAlignment="Left" Margin="438,16,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="312,41,0,0" TextWrapping="Wrap" Text="Distance Sensor 2:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockDistanceSensro2Value" HorizontalAlignment="Left" Margin="438,41,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="312,66,0,0" TextWrapping="Wrap" Text="Distance Sensor 3:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockDistanceSensro3Value" HorizontalAlignment="Left" Margin="438,66,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="312,91,0,0" TextWrapping="Wrap" Text="Distance Sensor 4:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockDistanceSensro4Value" HorizontalAlignment="Left" Margin="438,91,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="683,59,0,0" TextWrapping="Wrap" Text="Standard Distance Sensor 1:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockStandardDistanceSensro2Value" HorizontalAlignment="Left" Margin="872,59,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="683,84,0,0" TextWrapping="Wrap" Text="Standard Distance Sensor 2:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockStandardDistanceSensro1Value" HorizontalAlignment="Left" Margin="872,84,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
+        <Button x:Name="buttonGetStandardDistances" Content="Get Standard Distances" HorizontalAlignment="Left" Margin="683,22,0,0" VerticalAlignment="Top" Click="buttonGetStandardDistances_Click"/>
+        <TextBlock HorizontalAlignment="Left" Margin="683,109,0,0" TextWrapping="Wrap" Text="Standard Distance Sensor 3:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockStandardDistanceSensro3Value" HorizontalAlignment="Left" Margin="872,109,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="683,134,0,0" TextWrapping="Wrap" Text="Standard Distance Sensor 4:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="textBlockStandardDistanceSensro4Value" HorizontalAlignment="Left" Margin="872,134,0,0" TextWrapping="Wrap" Text="0 cm" VerticalAlignment="Top"/>
     </Grid>
 </Page>

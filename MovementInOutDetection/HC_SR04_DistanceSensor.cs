@@ -12,7 +12,9 @@ namespace MovementInOutDetection
     public class HC_SR04_DistanceSensor
     {
 
-        Guid Id { get; }   
+        Guid Id { get; }
+
+        public SensorMesuringSetting SensorMesuringSetting { get; set; }
         public HC_SR04_DistanceSensor(string name = "")
         {
             this.Name = name;
@@ -27,9 +29,9 @@ namespace MovementInOutDetection
             }
         }
 
-        DispatcherTimer timer_mesuring;
+        DispatcherTimer timer_measuring;
         bool IsSettingStandard = false;
-        int StandardSettingTiocksCounter = 0;
+        int StandardSetupingTicksCounter = 0;
 
         public void InitializePins(int pin_trig, int pin_echo)
         {
@@ -43,91 +45,114 @@ namespace MovementInOutDetection
 
             Pin_trig = gpio.OpenPin(pin_trig);
             Pin_trig.SetDriveMode(GpioPinDriveMode.Output);
+            Pin_trig.DebounceTimeout = TimeSpan.FromMilliseconds(SensorMesuringSetting.DebounceTimeout);
 
             Pin_echo = gpio.OpenPin(pin_echo);
             Pin_echo.SetDriveMode(GpioPinDriveMode.Input);
+            Pin_echo.DebounceTimeout = TimeSpan.FromMilliseconds(SensorMesuringSetting.DebounceTimeout);
 
             Delay(50);
         }
 
-        public void StartMesuring()
+        public void StartMeasuring()
         {
             if (ArePinsInitialized)
             {
-                timer_mesuring = new DispatcherTimer();
-                timer_mesuring.Interval = TimeSpan.FromMilliseconds(5);
-                timer_mesuring.Tick += Timer_mesuring_Tick;
+                timer_measuring = new DispatcherTimer()
+                {
+                    Interval = TimeSpan.FromMilliseconds(SensorMesuringSetting.MeasuringTimerInterval),
+                };
 
-                timer_mesuring.Start();
+                timer_measuring.Tick += Timer_measuring_Tick;
+                timer_measuring.Start();
             }
             else
                 throw new Exception("The pins are not initialized yet.");
         }
 
-        private void Timer_mesuring_Tick(object sender, object e)
+        private void Timer_measuring_Tick(object sender, object e)
         {
-            Task.Run(() => AddMesure());
-
-            if (IsSettingStandard)
+            try
             {
-                StandardSettingTiocksCounter++;
-                if (StandardSettingTiocksCounter > 350)
+                if (IsSettingStandard)
                 {
-                    StandardSettingTiocksCounter = 0;
-                    if (mesuringStandardList.Count == 5)
+                    StandardSetupingTicksCounter++;
+                    if (StandardSetupingTicksCounter > SensorMesuringSetting.SetupingTicksCounterMaxItmes)
                     {
-                        if (mesuringStandardList.Count(m => m == mesuringStandardList.Max()) == 1)
+                        StandardSetupingTicksCounter = 0;
+                        if (mesuringStandardList.Count == SensorMesuringSetting.SetupingTicksCounterMaxItmes)
                         {
-                            mesuringStandardList.Remove(mesuringStandardList.Max());
-                        }
+                            if (mesuringStandardList.Count(m => m == mesuringStandardList.Max()) == 1)
+                            {
+                                mesuringStandardList.Remove(mesuringStandardList.Max());
+                            }
 
-                        if (mesuringStandardList.Count(m => m == mesuringStandardList.Min()) == 1)
-                        {
-                            mesuringStandardList.Remove(mesuringStandardList.Min());
+                            if (mesuringStandardList.Count(m => m == mesuringStandardList.Min()) == 1)
+                            {
+                                mesuringStandardList.Remove(mesuringStandardList.Min());
+                            }
+
+                            var arroundList = mesuringStandardList
+                                .Select(m => Math.Round(m, 0))
+                                .GroupBy(m => m).Select(g => new
+                                {
+                                    Mesure = g.Key,
+                                    Count = g.Count()
+                                }).ToList();
+                            var maxCountValues = arroundList.First(m => m.Count == arroundList.Max(am => am.Count)).Mesure;
+                            StandardDistance = Math.Round(arroundList
+                                .Where(m => m.Mesure > maxCountValues - SensorMesuringSetting.AverageCalculatingMarginal 
+                                            && m.Mesure < maxCountValues + SensorMesuringSetting.AverageCalculatingMarginal)
+                                .Average(m => m.Mesure), 0);
+
+                            mesuringStandardList.Clear();
+                            IsSettingStandard = false;
                         }
-                        StandardDistance = mesuringStandardList.Average();
-                        mesuringStandardList.Clear();
-                        IsSettingStandard = false;
+                        else
+                            mesuringStandardList.Add(GetDistance());
                     }
-                    else
-                        mesuringStandardList.Add(GetDistance());
                 }
+
+                Task.Run(() => AddMesure());
             }
-        }        
+            catch { }
+        }      
 
         List<double> mesuringStandardList = new List<double>();
 
         public double StandardDistance { get; private set; } = -1;
 
-        public GpioPin Pin_trig { get; set; }
-        public GpioPin Pin_echo { get; set; }
+        public GpioPin Pin_trig { get; private set; }
+        public GpioPin Pin_echo { get; private set; }
 
         public string Name { get; private set; }
 
         List<double> mesuringList = new List<double>();
-
-        private const int MAX_VALUE = 300;
-        private const int MAX_QUEUE = 40;
         
         public void AddMesure()
         {
             var mesureValue = GetDistance();
 
-            if (mesureValue < 0 || mesureValue > MAX_VALUE)
+            if (mesureValue < 0 || mesureValue > SensorMesuringSetting.MaxValueForDistance)
                 return;
 
             mesuringList.Add(mesureValue);
 
             try
             {
-                if (mesuringList.Count > MAX_QUEUE)
-                    mesuringList.RemoveAt(0);
+                if (mesuringList.Count > SensorMesuringSetting.MaxItemInCalculatingQueue)
+                {
+                    lock (mesuringList)
+                    {
+                        mesuringList.RemoveAt(0);
+                    }
+                }
             }
             catch { }
 
         }
 
-        public void SetStandardDistance()
+        public void StartSearchingStandardDistance()
         {
             IsSettingStandard = true;
         }
@@ -151,7 +176,7 @@ namespace MovementInOutDetection
                 double duration = PulseIn(Pin_echo);
 
                 if (duration > -1)
-                    reslut = duration * 17900;
+                    reslut = duration * SensorMesuringSetting.DurationFactorForDistanceClaculation;
 
             }
             catch {}
@@ -162,34 +187,41 @@ namespace MovementInOutDetection
         public void AddMesure(double mesureValue)
         {
             
-            if (mesureValue < 0 || mesureValue > MAX_VALUE)
+            if (mesureValue < 0 || mesureValue > SensorMesuringSetting.MaxValueForDistance)
                 return;
 
             mesuringList.Add(mesureValue);
 
             try
             {
-                if (mesuringList.Count > MAX_QUEUE)
-                    mesuringList.RemoveAt(0);
+                lock (mesuringList)
+                {
+                    if (mesuringList.Count > SensorMesuringSetting.MaxItemInCalculatingQueue)
+                        mesuringList.RemoveAt(0);
+                }
             }
             catch { }
 
         }
 
-        public double Distance
+        public double MeasuredDistance
         {
             get
             {
                 if (!mesuringList.Any())
                     return 0;
 
-                if (mesuringList.Count < MAX_QUEUE)
+                if (mesuringList.Count < SensorMesuringSetting.MaxItemInCalculatingQueue)
                 {
                     return mesuringList.Average();
                 }
                 else
                 {
-                    var listWithoutExtremeValues = mesuringList;
+                    List<double> listWithoutExtremeValues;
+                    lock (mesuringList)
+                    {
+                        listWithoutExtremeValues = mesuringList.ToList();
+                    }
                     var maxMesure = listWithoutExtremeValues.Max();
                     var minMesure = listWithoutExtremeValues.Min();
 
@@ -209,11 +241,44 @@ namespace MovementInOutDetection
                             listWithoutExtremeValues.Remove(minMesure);
                     }
 
-                    return listWithoutExtremeValues.Any() ?
-                        listWithoutExtremeValues.Average() :
-                        mesuringList.Average();
+                    if (listWithoutExtremeValues.Any())
+                    {
+                        var arroundList = listWithoutExtremeValues
+                                    .Select(m => Math.Round(m, 0))
+                                    .GroupBy(m => m).Select(g => new
+                                    {
+                                        Mesure = g.Key,
+                                        Count = g.Count()
+                                    })
+                                    .ToList();
+
+                        var maxCountValues = arroundList
+                            .First(m => m.Count == arroundList.Max(am => am.Count))
+                            .Mesure;
+
+                        return Math.Round(
+                            arroundList
+                            .Where(m => m.Mesure > maxCountValues - SensorMesuringSetting.AverageCalculatingMarginal 
+                                        && m.Mesure < maxCountValues + SensorMesuringSetting.AverageCalculatingMarginal)
+                            .Average(m => m.Mesure)
+                            , 1);
+                    }
+
+                    return mesuringList.Average();
                 }
             }
         }
+    }
+
+    public class SensorMesuringSetting
+    {
+        public int DebounceTimeout { get; set; } = 100;
+        public int SetupingTicksCounterMaxItmes { get; set; } = 20;
+        public double MeasuringTimerInterval { get; set; } = 10;
+        public double AverageCalculatingMarginal { get; set; } = 10;
+        public int MaxValueForDistance { get; set; }= 300;
+        public int MaxItemInCalculatingQueue { get; set; } = 40;
+        public double DurationFactorForDistanceClaculation { get; set; } = 17900;//19000; // 18500;//17150; //17900;
+
     }
 }
