@@ -12,7 +12,7 @@ namespace MovementInOutDetection
     public class HC_SR04_DistanceSensor
     {
 
-        Guid Id { get; }
+        public Guid Id { get; }
 
         public SensorMesuringSetting SensorMesuringSetting { get; set; }
         public HC_SR04_DistanceSensor(string name = "")

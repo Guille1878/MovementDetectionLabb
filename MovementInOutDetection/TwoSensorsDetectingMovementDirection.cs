@@ -47,18 +47,69 @@ namespace MovementInOutDetection
                 Parallel.ForEach(new int[2] { 1, 2 }, sensorIndex =>
                 {
                     if (sensors[sensorIndex].MeasuredDistance < sensors[sensorIndex].StandardDistance - DistanceMarginal)
-                        if (!SensorDetectingWatch[sensorIndex].IsRunning)
-                            SensorDetectingWatch[sensorIndex].Start();
-                        else
-                        if (SensorDetectingWatch[sensorIndex].IsRunning)
+                    {
+                        if (!MeasuringsElapsed.Any(l => l.IsStillOpen && l.SensorId.Equals(sensors[sensorIndex].Id)))
+                            MeasuringsElapsed.Add(new Lapse(sensors[sensorIndex].Id));
+                    }
+                    else
+                    {
+                        if (MeasuringsElapsed.Any(l => l.IsStillOpen && l.SensorId.Equals(sensors[sensorIndex].Id)))
                         {
-                            //TODO: nonon
-
-
-                    khj
+                            MeasuringsElapsed.First(l => l.IsStillOpen && l.SensorId.Equals(sensors[sensorIndex].Id)).CloseLapse();
+                            CalculateMeasuringsElapsed();
                         }
+                    }
                 });
             }
         }
+                
+        List<Lapse> MeasuringsElapsed = new List<Lapse>();
+
+        private void CalculateMeasuringsElapsed()
+        {
+            var MeasuringsElapsedWorkingCopy = MeasuringsElapsed;
+            if (MeasuringsElapsedWorkingCopy.Count(m => m.IsStillOpen) == 2)
+            {
+                if (MeasuringsElapsedWorkingCopy.Select(m => m.SensorId).Distinct().Count() == 2)
+                {
+                    // Processing is here
+                    var comingFrom = MeasuringsElapsedWorkingCopy.First(m => m.Started == MeasuringsElapsedWorkingCopy.Min(mm => mm.Started)).SensorId;
+                    var passDuration = MeasuringsElapsedWorkingCopy.Min(m => m.Closed) - MeasuringsElapsedWorkingCopy.Min(m => m.Started);
+
+                    lock (MeasuringsElapsed)
+                        MeasuringsElapsedWorkingCopy.ForEach(mwc => MeasuringsElapsed.RemoveAll(m => m.Id.Equals(mwc.Id)));
+
+                    // ----------------
+                }
+                else
+                {
+                    lock (MeasuringsElapsed)
+                        MeasuringsElapsed.RemoveAll(m => m.Closed != MeasuringsElapsedWorkingCopy.Max(mwc => mwc.Closed));
+                }
+            }
+        }
+    }
+
+    public class Lapse
+    {
+        public Lapse(Guid sensorId)
+        {
+            this.SensorId = sensorId;
+        }
+
+        public Guid Id = Guid.NewGuid();
+        public Guid SensorId;
+        public readonly DateTime Started = DateTime.Now;
+        public DateTime? Closed { get; private set; }
+        public TimeSpan? Duration { get; private set; }
+
+        public void CloseLapse()
+        {
+            Closed = DateTime.Now;
+            Duration = Closed - Started;
+            IsStillOpen = false;
+        }
+
+        public bool IsStillOpen = true;
     }
 }
