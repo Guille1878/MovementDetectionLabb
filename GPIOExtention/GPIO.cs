@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Gpio;
 
-namespace MovementInOutDetection
+namespace GPIOExtention
 {
-    public static class GPIOExtention
+   
+    public class GPIO
     {
         private const int MAXIMUN_TIME_TO_WAIT_IN_MILLISECONDS = 100;
 
@@ -29,7 +33,7 @@ namespace MovementInOutDetection
             try
             {
 
-                
+
                 stopWatch.Reset();
 
                 while (echoPin.Read() == GpioPinValue.Low)
@@ -48,13 +52,13 @@ namespace MovementInOutDetection
                 stopWatch.Stop();
 
                 return stopWatch.Elapsed.TotalSeconds;
-                
+
             }
             catch
             {
                 return -1;
             }
-            
+
         }
 
     }

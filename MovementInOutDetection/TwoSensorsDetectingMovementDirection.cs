@@ -1,27 +1,26 @@
-﻿using System;
+﻿using HC_SR04_DistanceSensor;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace MovementInOutDetection
 {
     public class TwoSensorsDetectingMovementDirection
     {
-        private HC_SR04_DistanceSensor[] sensors;
 
-        //private double[] standardDistanceSensors = new double[2] { -1, -1 };
-
-        private DispatcherTimer timer_calculating;
-        public double DistanceMarginal { get; set; } = 20;
         public TwoSensorsDetectingMovementDirection() { }
 
-        public TwoSensorsDetectingMovementDirection(HC_SR04_DistanceSensor sensor1, HC_SR04_DistanceSensor sensor2)
+        public TwoSensorsDetectingMovementDirection(HCSR04 sensor1, HCSR04 sensor2)
         {
-            sensors[0] = sensor1;
-            sensors[1] = sensor2;
+            sensors = new HCSR04[2]
+            {
+                sensor1, sensor2
+            };
 
             for (short sensorIndex = 0; sensorIndex < 2; sensorIndex++)
             {
@@ -37,8 +36,41 @@ namespace MovementInOutDetection
             timer_calculating.Start();
         }
 
+              
+        public TwoSensorsDetectingMovementDirection(HCSR04 sensor1, HCSR04 sensor2, ref TextBlock textBlockIn, ref TextBlock textBlockOut, ref TextBlock textBlockTotal)
+        {
 
-        Stopwatch[] SensorDetectingWatch = null;
+            this.textBlockIn = textBlockIn;
+            this.textBlockOut = textBlockOut;
+            this.textBlockTotal = textBlockTotal;
+
+            sensors = new HCSR04[2]
+            {
+                sensor1, sensor2
+            };
+
+            for (short sensorIndex = 0; sensorIndex < 2; sensorIndex++)
+            {
+                if (sensors[sensorIndex].StandardDistance == -1)
+                    this.sensors[sensorIndex].StartSearchingStandardDistance();
+            }
+
+            timer_calculating = new DispatcherTimer()
+            {
+                Interval = TimeSpan.FromMilliseconds(50)
+            };
+            timer_calculating.Tick += Timer_calculating_Tick;
+            timer_calculating.Start();
+
+        }
+
+        private HCSR04[] sensors;
+
+        private DispatcherTimer timer_calculating;
+        public double DistanceMarginal { get; set; } = 20;
+
+        TextBlock textBlockIn, textBlockOut, textBlockTotal;
+        public double TotalPassIn = 0, TotalPassOut = 0, TotalInside = 0;
 
         private void Timer_calculating_Tick(object sender, object e)
         {
@@ -64,7 +96,7 @@ namespace MovementInOutDetection
         }
                 
         List<Lapse> MeasuringsElapsed = new List<Lapse>();
-
+                
         private void CalculateMeasuringsElapsed()
         {
             var MeasuringsElapsedWorkingCopy = MeasuringsElapsed;
@@ -76,10 +108,29 @@ namespace MovementInOutDetection
                     var comingFrom = MeasuringsElapsedWorkingCopy.First(m => m.Started == MeasuringsElapsedWorkingCopy.Min(mm => mm.Started)).SensorId;
                     var passDuration = MeasuringsElapsedWorkingCopy.Min(m => m.Closed) - MeasuringsElapsedWorkingCopy.Min(m => m.Started);
 
+                    if (comingFrom == sensors[0].Id)
+                    {
+                        TotalPassIn++;
+                        TotalInside++;
+                    }
+                    else
+                    {
+                        TotalPassOut++;
+                        TotalInside--;
+                    }
+
                     lock (MeasuringsElapsed)
                         MeasuringsElapsedWorkingCopy.ForEach(mwc => MeasuringsElapsed.RemoveAll(m => m.Id.Equals(mwc.Id)));
 
                     // ----------------
+
+                    //Special only for this pilot app
+                    textBlockIn.Text = TotalPassIn.ToString();
+                    textBlockOut.Text = TotalPassOut.ToString();
+                    textBlockTotal.Text = TotalInside.ToString();
+
+                    // ----------------
+
                 }
                 else
                 {

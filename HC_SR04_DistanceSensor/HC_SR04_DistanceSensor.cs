@@ -5,17 +5,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Gpio;
 using Windows.UI.Xaml;
-using static MovementInOutDetection.GPIOExtention;
+using static GPIOExtention.GPIO;
 
-namespace MovementInOutDetection
+namespace HC_SR04_DistanceSensor
 {
-    public class HC_SR04_DistanceSensor
+    public sealed class HCSR04 : IHCSR04
     {
-
-        public Guid Id { get; }
-
-        public SensorMesuringSetting SensorMesuringSetting { get; set; }
-        public HC_SR04_DistanceSensor(string name = "")
+        public HCSR04()
+        {
+            this.Name = "";
+            Id = Guid.NewGuid();
+        }
+        public HCSR04(string name)
         {
             this.Name = name;
             Id = Guid.NewGuid();
@@ -29,6 +30,8 @@ namespace MovementInOutDetection
             }
         }
 
+        public Guid Id { get; }
+        
         DispatcherTimer timer_measuring;
         bool IsSettingStandard = false;
         int StandardSetupingTicksCounter = 0;
@@ -119,6 +122,7 @@ namespace MovementInOutDetection
         }      
 
         List<double> mesuringStandardList = new List<double>();
+        List<double> mesuringList = new List<double>();
 
         public double StandardDistance { get; private set; } = -1;
 
@@ -127,28 +131,30 @@ namespace MovementInOutDetection
 
         public string Name { get; private set; }
 
-        List<double> mesuringList = new List<double>();
-        
         public void AddMesure()
         {
-            var mesureValue = GetDistance();
+            AddMesure(GetDistance());
+        }
 
-            if (mesureValue < 0 || mesureValue > SensorMesuringSetting.MaxValueForDistance)
-                return;
-
-            mesuringList.Add(mesureValue);
+        public void AddMesure(double mesureValue)
+        {
 
             try
             {
-                if (mesuringList.Count > SensorMesuringSetting.MaxItemInCalculatingQueue)
+                if (mesureValue < 0 || mesureValue > SensorMesuringSetting.MaxValueForDistance)
+                    return;
+
+                mesuringList.Add(mesureValue);
+
+                lock (mesuringList)
                 {
-                    lock (mesuringList)
-                    {
+                    if (mesuringList.Count > SensorMesuringSetting.MaxItemInCalculatingQueue)
                         mesuringList.RemoveAt(0);
-                    }
                 }
             }
-            catch { }
+            catch
+            {
+            }
 
         }
 
@@ -184,25 +190,7 @@ namespace MovementInOutDetection
             return reslut;
         }
 
-        public void AddMesure(double mesureValue)
-        {
-            
-            if (mesureValue < 0 || mesureValue > SensorMesuringSetting.MaxValueForDistance)
-                return;
-
-            mesuringList.Add(mesureValue);
-
-            try
-            {
-                lock (mesuringList)
-                {
-                    if (mesuringList.Count > SensorMesuringSetting.MaxItemInCalculatingQueue)
-                        mesuringList.RemoveAt(0);
-                }
-            }
-            catch { }
-
-        }
+       
 
         public double MeasuredDistance
         {
@@ -213,7 +201,7 @@ namespace MovementInOutDetection
 
                 if (mesuringList.Count < SensorMesuringSetting.MaxItemInCalculatingQueue)
                 {
-                    return mesuringList.Average();
+                    return Math.Round(mesuringList.Average(),1);
                 }
                 else
                 {
@@ -243,6 +231,8 @@ namespace MovementInOutDetection
 
                     if (listWithoutExtremeValues.Any())
                     {
+                        //return Math.Round(listWithoutExtremeValues.Average(),1);
+
                         var arroundList = listWithoutExtremeValues
                                     .Select(m => Math.Round(m, 0))
                                     .GroupBy(m => m).Select(g => new
@@ -264,13 +254,22 @@ namespace MovementInOutDetection
                             , 1);
                     }
 
-                    return mesuringList.Average();
+                    return Math.Round(mesuringList.Average(),1);
                 }
             }
         }
+
+        private SensorMesuringSetting sensorMesuringSetting = new SensorMesuringSetting();
+        public SensorMesuringSetting SensorMesuringSetting
+        {
+            get
+            {
+                return sensorMesuringSetting;
+            }
+        }        
     }
 
-    public class SensorMesuringSetting
+    public sealed class SensorMesuringSetting
     {
         public int DebounceTimeout { get; set; } = 100;
         public int SetupingTicksCounterMaxItmes { get; set; } = 20;
