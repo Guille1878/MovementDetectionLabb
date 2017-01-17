@@ -5,16 +5,10 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
 
-namespace IndoorPlaceInformationAPI
+namespace PlacesCounterAPI
 {
-    /// <summary>
-    /// WebApiApplication
-    /// </summary>
     public class WebApiApplication : System.Web.HttpApplication
     {
-        /// <summary>
-        /// Application_Start
-        /// </summary>
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);

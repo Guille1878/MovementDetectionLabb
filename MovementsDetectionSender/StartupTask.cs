@@ -119,8 +119,9 @@ namespace MovementsDetectionSender
                         sensorsDistance.Add(sensor.Id, sensor.GetDistance());
                     });
 
-                    string message = String.Join("##", sensorsDistance.Select(sd => sd.Key.ToString() + "::" + sd.Value.ToString()).ToArray());
+                    string message = String.Join("#", sensorsDistance.Select(sd => sd.Key.ToString() + "|" + sd.Value.ToString()).ToArray());
                     var commandMessage = new Message(Encoding.ASCII.GetBytes(message));
+                    commandMessage.Properties.Add("Direction", "From Raspberry with Distance Sensors To Swagger API");
                     await deviceIot.SendEventAsync(commandMessage);
                     stopWatch.Restart();
                 }

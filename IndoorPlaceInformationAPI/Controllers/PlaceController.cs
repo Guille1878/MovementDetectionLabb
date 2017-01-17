@@ -9,56 +9,40 @@ using IndoorPlaceInformationAPI.Models;
 
 namespace IndoorPlaceInformationAPI.Controllers
 {
+    /// <summary>
+    /// Places Controller
+    /// </summary>
     public class PlacesController : ApiController
     {
-        // GET api/places
+        // get api/places
+        /// <summary>
+        /// Get All Places in the database
+        /// </summary>
+        /// <returns>A list of Places</returns>
         [SwaggerOperation("GetAll")]
         public IEnumerable<Place> Get()
         {
-            
+
             try
             {
                 return new Place[1]
                 {
-                    new Place("Test", new Entrance[0])
+                    new Place("test", new Entrance[0])
                 };
             }
-            catch 
+            catch
             {
                 return new Place[0];
             }
         }
-
-        // GET api/places?StartCounting
-        [SwaggerOperation("StartCounting")]
-        public string StartCounting()
-        {
-            try
-            {
-                return "OK";
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-            
-        }
-
-        // GET api/places?StopCounting
-        [SwaggerOperation("StopCounting")]
-        public string StopCounting()
-        {
-            try
-            {
-                return "OK";
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-            }
-        }
+           
 
         // GET api/places/5
+        /// <summary>
+        /// GetById
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [SwaggerOperation("GetById")]
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
@@ -72,10 +56,63 @@ namespace IndoorPlaceInformationAPI.Controllers
             {
                 return new Place("", new Entrance[0]);
             }
-            
+        }
+
+        // GET api/places/5
+        /// <summary>
+        /// StartDetecting
+        /// </summary>
+        /// <param name="placeId"></param>
+        /// <returns></returns>
+        [SwaggerOperation("Get")]
+        [SwaggerResponse(HttpStatusCode.OK)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [HttpGet]
+        public string StartDetecting(string placeId)
+        {
+            try
+            {
+                var placeIdGuid = Guid.Parse(placeId);
+                CollectingDistanceData.StartDetectingPlaceAsync(placeIdGuid);
+
+                return "OK";
+
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// StopDetecting
+        /// </summary>
+        /// <param name="placeId"></param>
+        /// <returns></returns>
+        [SwaggerOperation("Get")]
+        [SwaggerResponse(HttpStatusCode.OK)]
+        [SwaggerResponse(HttpStatusCode.NotFound)]
+        [HttpGet]
+        public string StopDetecting(string placeId)
+        {
+            try
+            {
+                var placeIdGuid = Guid.Parse(placeId);
+                CollectingDistanceData.StopDetectingPlaceAsync(placeIdGuid);
+
+                return "OK";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
         // POST api/places
+        /// <summary>
+        /// Post places
+        /// </summary>
+        /// <param name="value"></param>
         [SwaggerOperation("Create")]
         [SwaggerResponse(HttpStatusCode.Created)]
         public void Post([FromBody]string value)
@@ -83,6 +120,11 @@ namespace IndoorPlaceInformationAPI.Controllers
         }
 
         // PUT api/places/5
+        /// <summary>
+        /// Update places
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="value"></param>
         [SwaggerOperation("Update")]
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
@@ -91,6 +133,10 @@ namespace IndoorPlaceInformationAPI.Controllers
         }
 
         // DELETE api/places/5
+        /// <summary>
+        /// DELETE places
+        /// </summary>
+        /// <param name="id"></param>
         [SwaggerOperation("Delete")]
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]

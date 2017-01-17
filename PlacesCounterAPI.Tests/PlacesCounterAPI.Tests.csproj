@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9D834F91-3BCC-41ED-9C1F-6DB2EB05FDF6}</ProjectGuid>
+    <ProjectGuid>{4E8F17DD-1F31-42B5-BE86-D4C4575DC966}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IndoorPlaceInformationAPI.Tests</RootNamespace>
-    <AssemblyName>IndoorPlaceInformationAPI.Tests</AssemblyName>
+    <RootNamespace>PlacesCounterAPI.Tests</RootNamespace>
+    <AssemblyName>PlacesCounterAPI.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -52,13 +52,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IndoorPlaceInformationAPI\IndoorPlaceInformationAPI.csproj">
-      <Project>{3F7F6300-B1EA-4EC2-883C-8A50D5422984}</Project>
-      <Name>IndoorPlaceInformationAPI</Name>
+    <ProjectReference Include="..\PlacesCounterAPI\PlacesCounterAPI.csproj">
+      <Project>{60553A94-52C3-4735-933E-D6023EEA2243}</Project>
+      <Name>PlacesCounterAPI</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

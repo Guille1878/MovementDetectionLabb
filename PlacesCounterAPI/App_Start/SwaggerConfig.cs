@@ -1,27 +1,23 @@
+﻿using System.Globalization;
+using System.Linq;
 using System.Web.Http;
-using WebActivatorEx;
-using IndoorPlaceInformationAPI;
+using System.Web.Http.Description;
 using Swashbuckle.Application;
-using System;
-using System.Web;
+using Swashbuckle.Swagger;
+using WebActivatorEx;
+using PlacesCounterAPI;
 
-[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
+[assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
-namespace IndoorPlaceInformationAPI
+namespace PlacesCounterAPI
 {
-    /// <summary>
-    /// SwaggerConfig
-    /// </summary>
     public class SwaggerConfig
     {
-        /// <summary>
-        /// Register Swagger
-        /// </summary>
         public static void Register()
         {
             var thisAssembly = typeof(SwaggerConfig).Assembly;
 
-            GlobalConfiguration.Configuration 
+            GlobalConfiguration.Configuration
                 .EnableSwagger(c =>
                     {
                         // By default, the service root url is inferred from the request used to access the docs.
@@ -40,7 +36,7 @@ namespace IndoorPlaceInformationAPI
                         // hold additional metadata for an API. Version and title are required but you can also provide
                         // additional fields by chaining methods off SingleApiVersion.
                         //
-                        c.SingleApiVersion("v1", "IndoorPlaceInformationAPI");
+                        c.SingleApiVersion("v1", "PlacesCounterAPI");
 
                         // If your API has multiple versions, use "MultipleApiVersions" instead of "SingleApiVersion".
                         // In this case, you must provide a lambda that tells Swashbuckle which actions should be
@@ -65,7 +61,6 @@ namespace IndoorPlaceInformationAPI
                         //c.BasicAuth("basic")
                         //    .Description("Basic HTTP Authentication");
                         //
-						// NOTE: You must also configure 'EnableApiKeySupport' below in the SwaggerUI section
                         //c.ApiKey("apiKey")
                         //    .Description("API Key Authentication")
                         //    .Name("apiKey")
@@ -105,7 +100,7 @@ namespace IndoorPlaceInformationAPI
                         // those comments into the generated docs and UI. You can enable this by providing the path to one or
                         // more Xml comment files.
                         //
-                        //c.IncludeXmlComments(HttpContext.Current.Server.MapPath("~/bin/IndoorPlaceInformationAPI.XML"));
+                        //c.IncludeXmlComments(GetXmlCommentsPath());
 
                         // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
                         // exposed in your API. However, there may be occasions when more control of the output is needed.
@@ -161,6 +156,17 @@ namespace IndoorPlaceInformationAPI
                         // to execute the operation
                         //
                         //c.OperationFilter<AssignOAuth2SecurityRequirements>();
+                        //
+
+                        // Set filter to eliminate duplicate operation ids from being generated
+                        // when there are multiple operations with the same verb in the API.
+                        // ***
+                        // If you would prefer to globally impact the Swagger operation id's rather
+                        // than control them on a per-action method basis, uncomment the next line 
+                        // and the IncludeParameterNamesInOperationIdFilter class below.
+                        // ***
+                        //c.OperationFilter<IncludeParameterNamesInOperationIdFilter>();
+                        //
 
                         // Post-modify the entire Swagger document by wiring up one or more Document filters.
                         // This gives full control to modify the final SwaggerDocument. You should have a good understanding of
@@ -180,9 +186,12 @@ namespace IndoorPlaceInformationAPI
                         // alternative implementation for ISwaggerProvider with the CustomProvider option.
                         //
                         //c.CustomProvider((defaultProvider) => new CachingSwaggerProvider(defaultProvider));
-                    })
-                .EnableSwaggerUi(c =>
-                    {
+                        // ***** Uncomment the following to enable the swagger UI *****
+                        
+                            })
+                        .EnableSwaggerUi(c =>
+                            {
+                        
                         // Use the "InjectStylesheet" option to enrich the UI with one or more additional CSS stylesheets.
                         // The file must be included in your project as an "Embedded Resource", and then the resource's
                         // "Logical Name" is passed to the method as shown below.
@@ -213,11 +222,6 @@ namespace IndoorPlaceInformationAPI
                         //
                         //c.DocExpansion(DocExpansion.List);
 
-                        // Specify which HTTP operations will have the 'Try it out!' option. An empty paramter list disables
-                        // it for all operations.
-                        //
-                        //c.SupportedSubmitMethods("GET", "HEAD");
-
                         // Use the CustomAsset option to provide your own version of assets used in the swagger-ui.
                         // It's typically used to instruct Swashbuckle to return your version instead of the default
                         // when a request is made for "index.html". As with all custom content, the file must be included
@@ -236,21 +240,32 @@ namespace IndoorPlaceInformationAPI
                         // If your API supports the OAuth2 Implicit flow, and you've described it correctly, according to
                         // the Swagger 2.0 specification, you can enable UI support as shown below.
                         //
-                        //c.EnableOAuth2Support(
-                        //    clientId: "test-client-id",
-                        //    clientSecret: null,
-                        //    realm: "test-realm",
-                        //    appName: "Swagger UI"
-                        //    //additionalQueryStringParams: new Dictionary<string, string>() { { "foo", "bar" } }
-                        //);
-
-                        // If your API supports ApiKey, you can override the default values.
-                        // "apiKeyIn" can either be "query" or "header"                                                
-                        //
-                        //c.EnableApiKeySupport("apiKey", "header");
+                        //c.EnableOAuth2Support("test-client-id", "test-realm", "Swagger UI");
                     });
         }
-
-        
     }
+
+    /// <summary>
+    /// If you would prefer to control the Swagger Operation ID
+    /// values globally, uncomment this class, as well as the 
+    /// call above that wires this Operation Filter into 
+    /// the pipeline.
+    /// </summary>
+    /*
+    internal class IncludeParameterNamesInOperationIdFilter : IOperationFilter
+    {
+        public void Apply(Operation operation, SchemaRegistry schemaRegistry, ApiDescription apiDescription)
+        {
+            if (operation.parameters != null)
+            {
+                // Select the capitalized parameter names
+                var parameters = operation.parameters.Select(
+                    p => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(p.name));
+
+                // Set the operation id to match the format "OperationByParam1AndParam2"
+                operation.operationId = $"{operation.operationId}By{string.Join("And", parameters)}";
+            }
+        }
+    }
+    */
 }

@@ -30,7 +30,7 @@ namespace HC_SR04_DistanceSensor
             }
         }
 
-        public Guid Id { get; }
+        public Guid Id { get; private set; }
         
         DispatcherTimer timer_measuring;
         bool IsSettingStandard = false;
@@ -45,6 +45,30 @@ namespace HC_SR04_DistanceSensor
                 Pin_trig = Pin_echo = null;
                 throw new Exception("There is no GPIO controller on this device.");
             }
+
+            Pin_trig = gpio.OpenPin(pin_trig);
+            Pin_trig.SetDriveMode(GpioPinDriveMode.Output);
+            Pin_trig.DebounceTimeout = TimeSpan.FromMilliseconds(SensorMesuringSetting.DebounceTimeout);
+
+            Pin_echo = gpio.OpenPin(pin_echo);
+            Pin_echo.SetDriveMode(GpioPinDriveMode.Input);
+            Pin_echo.DebounceTimeout = TimeSpan.FromMilliseconds(SensorMesuringSetting.DebounceTimeout);
+
+            Delay(50);
+        }
+
+        public void InitializePins(Guid id, string name, int pin_trig, int pin_echo)
+        {
+            var gpio = GpioController.GetDefault();
+
+            if (gpio == null)
+            {
+                Pin_trig = Pin_echo = null;
+                throw new Exception("There is no GPIO controller on this device.");
+            }
+
+            this.Id = id;
+            this.Name = name;
 
             Pin_trig = gpio.OpenPin(pin_trig);
             Pin_trig.SetDriveMode(GpioPinDriveMode.Output);
