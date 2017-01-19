@@ -13,8 +13,10 @@ namespace IndoorPlaceInformationAPI.Controllers
     internal class CollectingDistanceData
     {
         private static readonly ServiceClient serviceClient;
-        private static readonly string deviceId = "WillesRaspbarryDevId";
-        private static readonly string deviceConnectionString = @"HostName=WillesIotHub1.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=4YffuSTgyX5vHqeYaS+sy6uacKDxtuEktHh+rGZeEbM=";
+        private static readonly string deviceId = @"swedaviaiotlabbId";
+            //"WillesRaspbarryDevId";
+        private static readonly string deviceConnectionString = @"HostName=swedavialabbHub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=3JM15d+vfOGvgcckCJ71zbKAnIwCN76CeHanG27a8dQ=";
+            //@"HostName=WillesIotHub1.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=4YffuSTgyX5vHqeYaS+sy6uacKDxtuEktHh+rGZeEbM=";
 
 
 
@@ -35,8 +37,10 @@ namespace IndoorPlaceInformationAPI.Controllers
 
             await Task.Delay(1000);
 
-            var connectionString = "sb://iothub-ns-willesioth-82285-53001c7cc2.servicebus.windows.net/";
-            var queueName = "DistanceMesures";
+            var connectionString = "sb://iothub-ns-swedaviala-105751-d1c5f83d17.servicebus.windows.net/";
+            //@"HostName=swedavialabbHub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=3JM15d+vfOGvgcckCJ71zbKAnIwCN76CeHanG27a8dQ=";
+
+            var queueName = "DistanceMeasures";
 
             var client = QueueClient.CreateFromConnectionString(connectionString, queueName);
 

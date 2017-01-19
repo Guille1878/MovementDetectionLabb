@@ -19,8 +19,11 @@ namespace MovementsDetectionSender
 
         BackgroundTaskDeferral _deferral;
 
-        internal static readonly string deviceId = "WillesRaspbarryDevId";
-        internal static readonly string deviceConnectionString = @"HostName=WillesIotHub1.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=4YffuSTgyX5vHqeYaS+sy6uacKDxtuEktHh+rGZeEbM=";
+        internal static readonly string deviceId = "swedaviaiotlabbId";
+        internal static readonly string deviceConnectionString = @"HostName=swedavialabbHub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=3JM15d+vfOGvgcckCJ71zbKAnIwCN76CeHanG27a8dQ=";
+                                                               //@"HostName=swedavialabbHub.azure-devices.net;DeviceId=swedaviaiotlabbId;SharedAccessKey=nmBFrPYhac13PuyCQyarRcFlVOpYjNEevY/8ytl5PaM=";
+                                                               //@"HostName=WillesIotHub1.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=4YffuSTgyX5vHqeYaS+sy6uacKDxtuEktHh+rGZeEbM=";
+
 
         //private SendingData sendingToAzure;
         private DeviceClient deviceIot;
@@ -50,7 +53,7 @@ namespace MovementsDetectionSender
             _deferral = taskInstance.GetDeferral();
 
             //sendingToAzure = new SendingData(deviceId, deviceConnectionString);
-            deviceIot = DeviceClient.CreateFromConnectionString(deviceConnectionString, deviceId, Microsoft.Azure.Devices.Client.TransportType.Http1);
+            deviceIot = DeviceClient.CreateFromConnectionString(deviceConnectionString, deviceId, TransportType.Http1);
 
             ReceiveCommandsAsync();
 
