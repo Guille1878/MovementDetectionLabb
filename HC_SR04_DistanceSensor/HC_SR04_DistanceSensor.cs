@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Gpio;
-using Windows.UI.Xaml;
+using Windows.System.Threading;
+//using Windows.UI.Xaml;
 using static GPIOExtention.GPIO;
 
 namespace HC_SR04_DistanceSensor
@@ -31,8 +32,9 @@ namespace HC_SR04_DistanceSensor
         }
 
         public Guid Id { get; private set; }
-        
-        DispatcherTimer timer_measuring;
+
+        //DispatcherTimer timer_measuring;
+        ThreadPoolTimer timer_measuring;
         bool IsSettingStandard = false;
         int StandardSetupingTicksCounter = 0;
 
@@ -85,6 +87,9 @@ namespace HC_SR04_DistanceSensor
         {
             if (ArePinsInitialized)
             {
+                timer_measuring = ThreadPoolTimer.CreatePeriodicTimer(Timer_measuringTimerElapsedHandler, TimeSpan.FromMilliseconds(SensorMesuringSetting.MeasuringTimerInterval));
+
+                /*
                 timer_measuring = new DispatcherTimer()
                 {
                     Interval = TimeSpan.FromMilliseconds(SensorMesuringSetting.MeasuringTimerInterval),
@@ -92,9 +97,58 @@ namespace HC_SR04_DistanceSensor
 
                 timer_measuring.Tick += Timer_measuring_Tick;
                 timer_measuring.Start();
+                */
             }
             else
                 throw new Exception("The pins are not initialized yet.");
+        }
+
+        private void Timer_measuringTimerElapsedHandler(ThreadPoolTimer timer)
+        {
+            try
+            {
+                if (IsSettingStandard)
+                {
+                    StandardSetupingTicksCounter++;
+                    if (StandardSetupingTicksCounter > SensorMesuringSetting.SetupingTicksCounterMaxItmes)
+                    {
+                        StandardSetupingTicksCounter = 0;
+                        if (mesuringStandardList.Count == SensorMesuringSetting.SetupingTicksCounterMaxItmes)
+                        {
+                            if (mesuringStandardList.Count(m => m == mesuringStandardList.Max()) == 1)
+                            {
+                                mesuringStandardList.Remove(mesuringStandardList.Max());
+                            }
+
+                            if (mesuringStandardList.Count(m => m == mesuringStandardList.Min()) == 1)
+                            {
+                                mesuringStandardList.Remove(mesuringStandardList.Min());
+                            }
+
+                            var arroundList = mesuringStandardList
+                                .Select(m => Math.Round(m, 0))
+                                .GroupBy(m => m).Select(g => new
+                                {
+                                    Mesure = g.Key,
+                                    Count = g.Count()
+                                }).ToList();
+                            var maxCountValues = arroundList.First(m => m.Count == arroundList.Max(am => am.Count)).Mesure;
+                            StandardDistance = Math.Round(arroundList
+                                .Where(m => m.Mesure > maxCountValues - SensorMesuringSetting.AverageCalculatingMarginal
+                                            && m.Mesure < maxCountValues + SensorMesuringSetting.AverageCalculatingMarginal)
+                                .Average(m => m.Mesure), 0);
+
+                            mesuringStandardList.Clear();
+                            IsSettingStandard = false;
+                        }
+                        else
+                            mesuringStandardList.Add(GetDistance());
+                    }
+                }
+
+                Task.Run(() => AddMesure());
+            }
+            catch { }
         }
 
         private void Timer_measuring_Tick(object sender, object e)
@@ -297,10 +351,10 @@ namespace HC_SR04_DistanceSensor
     {
         public int DebounceTimeout { get; set; } = 100;
         public int SetupingTicksCounterMaxItmes { get; set; } = 20;
-        public double MeasuringTimerInterval { get; set; } = 10;
+        public double MeasuringTimerInterval { get; set; } = 50;
         public double AverageCalculatingMarginal { get; set; } = 10;
         public int MaxValueForDistance { get; set; }= 300;
-        public int MaxItemInCalculatingQueue { get; set; } = 40;
+        public int MaxItemInCalculatingQueue { get; set; } = 30;
         public double DurationFactorForDistanceClaculation { get; set; } = 17900;//19000; // 18500;//17150; //17900;
 
     }

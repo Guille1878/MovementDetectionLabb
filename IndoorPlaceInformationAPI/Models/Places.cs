@@ -36,7 +36,7 @@ namespace IndoorPlaceInformationAPI.Models
         {
             Id = Guid.NewGuid();
             Name = id.ToString();
-            Entrance[] Entrance = new Entrance[1] {
+            Entrance = new Entrance[1] {
                 new Entrance("Main door", new SensorBoard[2]
                 {
                     new SensorBoard(new Sensor(Guid.NewGuid(),"AIn",13,13), new Sensor(Guid.NewGuid(),"AOut",13,13)),

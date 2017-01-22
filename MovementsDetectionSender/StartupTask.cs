@@ -8,6 +8,7 @@ using Microsoft.Azure.Devices.Client;
 using System.Diagnostics;
 using HC_SR04_DistanceSensor;
 using System.Threading.Tasks;
+using Windows.System.Threading;
 //using SendingDataToAzure;
 
 // The Background Application template is documented at http://go.microsoft.com/fwlink/?LinkID=533884&clcid=0x409
@@ -52,16 +53,54 @@ namespace MovementsDetectionSender
         {
             _deferral = taskInstance.GetDeferral();
 
-            //sendingToAzure = new SendingData(deviceId, deviceConnectionString);
-            deviceIot = DeviceClient.CreateFromConnectionString(deviceConnectionString, deviceId, TransportType.Http1);
-
-            ReceiveCommandsAsync();
+            try
+            {
 
 
+                //sendingToAzure = new SendingData(deviceId, deviceConnectionString);
+                deviceIot = DeviceClient.CreateFromConnectionString(deviceConnectionString, deviceId, TransportType.Http1);
+
+                StartMeasuringAsync();
+
+               //ReceiveCommandsAsync();
+            }
+            catch (Exception ex)
+            {
+                var vad = ex.Message;
+                throw;
+            }
+
+        }
+        ThreadPoolTimer PeriodicTimer;
+        private async void ExampleTimerElapsedHandler(ThreadPoolTimer timer)
+        {
+            try
+            {
+
+                Dictionary<Guid, double> sensorsDistance = new Dictionary<Guid, double>();
+                Parallel.ForEach(sensors, sensor => {
+                    sensorsDistance.Add(sensor.Id, sensor.GetDistance());
+                });
+
+                string message = String.Join("#", sensorsDistance.Select(sd => sd.Key.ToString() + "|" + sd.Value.ToString()).ToArray());
+                var commandMessage = new Message(Encoding.ASCII.GetBytes(message));
+                commandMessage.Properties.Add("Direction", "From Raspberry with Distance Sensors To Swagger API");
+                await deviceIot.SendEventAsync(commandMessage);
+
+            }
+            catch (Exception ex)
+            {
+                var vad = ex.Message;
+                throw;
+            }
         }
 
         public async void ReceiveCommandsAsync()
         {
+            try
+            {
+
+            
             Stopwatch stopWatch = Stopwatch.StartNew();
             while (true)
             {
@@ -93,23 +132,52 @@ namespace MovementsDetectionSender
                                 sensors[3].InitializePins(PIN_TRIG_SENSOR_4, PIN_ECHO_SENSOR_4);
 
                                 isSendingData = true;
-                                SendMeasuresAsync();
-                            }
+
+                                await Task.Delay(2000);
+
+                                    //SendMeasuresAsync();
+
+                                    //PeriodicTimer = ThreadPoolTimer.CreatePeriodicTimer(ExampleTimerElapsedHandler, TimeSpan.FromMilliseconds(1000));
+                                }
                             else if (messageData.Contains("#STOP"))
                             {
-                                isSendingData = false;
+                                    //PeriodicTimer.Cancel();
+                                //isSendingData = false;
                             }
                             await deviceIot.CompleteAsync(receivedMessage);
                         }
                     stopWatch.Restart();
                 }
             }
+            }
+            catch (Exception ex)
+            {
+                var vd = ex.Message;
+                throw;
+            }
         }
 
         private bool isSendingData = false;
 
+        public async void StartMeasuringAsync()
+        {
+
+            await Task.Delay(10000);
+
+            sensors[0].InitializePins(PIN_TRIG_SENSOR_1, PIN_ECHO_SENSOR_1);
+            sensors[1].InitializePins(PIN_TRIG_SENSOR_2, PIN_ECHO_SENSOR_2);
+            sensors[2].InitializePins(PIN_TRIG_SENSOR_3, PIN_ECHO_SENSOR_3);
+            sensors[3].InitializePins(PIN_TRIG_SENSOR_4, PIN_ECHO_SENSOR_4);
+
+            SendMeasuresAsync();
+        }
+
         public async void SendMeasuresAsync()
         {
+            try
+            {
+
+            
             Stopwatch stopWatch = Stopwatch.StartNew();
             while (isSendingData)
             {
@@ -128,6 +196,13 @@ namespace MovementsDetectionSender
                     await deviceIot.SendEventAsync(commandMessage);
                     stopWatch.Restart();
                 }
+            }
+
+            }
+            catch (Exception ex)
+            {
+                var vad = ex.Message;
+                throw;
             }
         }
     }

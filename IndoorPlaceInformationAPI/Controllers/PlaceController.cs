@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using Swashbuckle.Swagger.Annotations;
 using IndoorPlaceInformationAPI.Models;
+using System.Threading.Tasks;
 
 namespace IndoorPlaceInformationAPI.Controllers
 {
@@ -68,13 +69,13 @@ namespace IndoorPlaceInformationAPI.Controllers
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
         [HttpGet]
-        public string StartDetecting(string placeId)
+        public async Task<string> StartDetecting(string placeId)
         {
             try
             {
                 var placeIdGuid = Guid.Parse(placeId);
-                CollectingDistanceData.StartDetectingPlaceAsync(placeIdGuid);
-
+                await CollectingDistanceData.StartDetectingPlaceAsync(placeIdGuid);
+                
                 return "OK";
 
             }

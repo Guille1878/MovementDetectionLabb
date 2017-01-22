@@ -28,11 +28,11 @@ namespace MovementInOutDetection
         private const int PIN_TRIG_SENSOR_2 = 24;
         private const int PIN_ECHO_SENSOR_2 = 23;
 
-        private const int PIN_TRIG_SENSOR_3 = 19;
-        private const int PIN_ECHO_SENSOR_3 = 26;
+        private const int PIN_TRIG_SENSOR_3 = 6;
+        private const int PIN_ECHO_SENSOR_3 = 13;
 
-        private const int PIN_TRIG_SENSOR_4 = 16;
-        private const int PIN_ECHO_SENSOR_4 = 20;
+        private const int PIN_TRIG_SENSOR_4 = 12;
+        private const int PIN_ECHO_SENSOR_4 = 16;
 
         HCSR04[] sensors = new HCSR04[]
         {
@@ -57,7 +57,7 @@ namespace MovementInOutDetection
 
             timerReading = new DispatcherTimer()
             {
-                Interval = TimeSpan.FromSeconds(0.5)
+                Interval = TimeSpan.FromMilliseconds(200)
             };
             timerReading.Tick += TimerReading_Tick;
 
@@ -66,20 +66,22 @@ namespace MovementInOutDetection
 
                 sensors[0].InitializePins(PIN_TRIG_SENSOR_1, PIN_ECHO_SENSOR_1);
                 sensors[1].InitializePins(PIN_TRIG_SENSOR_2, PIN_ECHO_SENSOR_2);
-                sensors[2].InitializePins(PIN_TRIG_SENSOR_3, PIN_ECHO_SENSOR_3);
-                sensors[3].InitializePins(PIN_TRIG_SENSOR_4, PIN_ECHO_SENSOR_4);
+                //sensors[2].InitializePins(PIN_TRIG_SENSOR_3, PIN_ECHO_SENSOR_3);
+                //sensors[3].InitializePins(PIN_TRIG_SENSOR_4, PIN_ECHO_SENSOR_4);
 
-                if (!(sensors.Any(s => !s.ArePinsInitialized)))
-                {
-                    timing = Stopwatch.StartNew();
+                Task.Delay(1000);
+                //if (!(sensors.Any(s => !s.ArePinsInitialized)))
+                //{
+                timing = Stopwatch.StartNew();
 
-                    //foreach (var sensor in sensors)
-                    //{
-                    //    sensor.StartMeasuring();
-                    //}
-                    timerMesuring.Start();
-                    timerReading.Start();
-                }
+                //foreach (var sensor in sensors.Where(s => s.ArePinsInitialized))
+                //{
+                //    sensor.StartMeasuring();
+                //}
+
+                timerMesuring.Start();
+                timerReading.Start();
+                //}
 
             }
             catch (Exception ex)
@@ -95,8 +97,8 @@ namespace MovementInOutDetection
             {
                     TextBlockDistanceSensro1Value.Text = sensors[0].MeasuredDistance.ToString() + " cm";
                     TextBlockDistanceSensro2Value.Text = sensors[1].MeasuredDistance.ToString() + " cm";
-                    TextBlockDistanceSensro3Value.Text = sensors[2].MeasuredDistance.ToString() + " cm";
-                    TextBlockDistanceSensro4Value.Text = sensors[3].MeasuredDistance.ToString() + " cm";
+                    //TextBlockDistanceSensro3Value.Text = sensors[2].MeasuredDistance.ToString() + " cm";
+                    //TextBlockDistanceSensro4Value.Text = sensors[3].MeasuredDistance.ToString() + " cm";
              
             }
             catch (Exception ex)
@@ -164,10 +166,15 @@ namespace MovementInOutDetection
                     }
                 }
 
-                    foreach (var sensor in sensors)
-                    {
-                        sensor.AddMesure();
-                    }
+
+                //Parallel.ForEach(sensors.Where(s => s.ArePinsInitialized), sensor =>
+                //{
+                //    sensor.AddMesure();
+                //});
+                foreach (var sensor in sensors.Where(s => s.ArePinsInitialized))
+                {
+                    sensor.AddMesure();
+                }
 
             }
             catch (Exception ex)

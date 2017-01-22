@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IndoorPlaceInformationAPI.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -18,6 +19,7 @@ namespace IndoorPlaceInformationAPI
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            CollectingDistanceData.Initialize();
         }
     }
 }
