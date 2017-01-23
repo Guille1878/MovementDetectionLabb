@@ -49,45 +49,7 @@ namespace MovementInOutDetection
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
 
-            timerMesuring = new DispatcherTimer()
-            {
-                Interval = TimeSpan.FromMilliseconds(50)
-            };
-            timerMesuring.Tick += TimerMesuring_Tick;
-
-            timerReading = new DispatcherTimer()
-            {
-                Interval = TimeSpan.FromMilliseconds(200)
-            };
-            timerReading.Tick += TimerReading_Tick;
-
-            try
-            {
-
-                sensors[0].InitializePins(PIN_TRIG_SENSOR_1, PIN_ECHO_SENSOR_1);
-                sensors[1].InitializePins(PIN_TRIG_SENSOR_2, PIN_ECHO_SENSOR_2);
-                //sensors[2].InitializePins(PIN_TRIG_SENSOR_3, PIN_ECHO_SENSOR_3);
-                //sensors[3].InitializePins(PIN_TRIG_SENSOR_4, PIN_ECHO_SENSOR_4);
-
-                Task.Delay(1000);
-                //if (!(sensors.Any(s => !s.ArePinsInitialized)))
-                //{
-                timing = Stopwatch.StartNew();
-
-                //foreach (var sensor in sensors.Where(s => s.ArePinsInitialized))
-                //{
-                //    sensor.StartMeasuring();
-                //}
-
-                timerMesuring.Start();
-                timerReading.Start();
-                //}
-
-            }
-            catch (Exception ex)
-            {
-                TextBlockMessage.Text = ex.Message;
-            }
+            
 
         }
 
@@ -202,9 +164,52 @@ namespace MovementInOutDetection
             standardDistance3 = -1,
             standardDistance4 = -1;
 
+        private void ButtonStartCounting_Copy_Click(object sender, RoutedEventArgs e)
+        {
+            timerMesuring = new DispatcherTimer()
+            {
+                Interval = TimeSpan.FromMilliseconds(50)
+            };
+            timerMesuring.Tick += TimerMesuring_Tick;
+
+            timerReading = new DispatcherTimer()
+            {
+                Interval = TimeSpan.FromMilliseconds(200)
+            };
+            timerReading.Tick += TimerReading_Tick;
+
+            try
+            {
+
+                sensors[0].InitializePins(PIN_TRIG_SENSOR_1, PIN_ECHO_SENSOR_1);
+                sensors[1].InitializePins(PIN_TRIG_SENSOR_2, PIN_ECHO_SENSOR_2);
+                //sensors[2].InitializePins(PIN_TRIG_SENSOR_3, PIN_ECHO_SENSOR_3);
+                //sensors[3].InitializePins(PIN_TRIG_SENSOR_4, PIN_ECHO_SENSOR_4);
+
+                Task.Delay(1000);
+                //if (!(sensors.Any(s => !s.ArePinsInitialized)))
+                //{
+                timing = Stopwatch.StartNew();
+
+                //foreach (var sensor in sensors.Where(s => s.ArePinsInitialized))
+                //{
+                //    sensor.StartMeasuring();
+                //}
+
+                timerMesuring.Start();
+                timerReading.Start();
+                //}
+
+            }
+            catch (Exception ex)
+            {
+                TextBlockMessage.Text = ex.Message;
+            }
+        }
+
         private void ButtonStartCounting_Click(object sender, RoutedEventArgs e)
         {
-            new TwoSensorsDetectingMovementDirection(sensors[0], sensors[1], ref TextBlockInValue, ref TextBlockOutValue,ref TextBlockTotalInsideValue);
+            new TwoSensorsDetectingMovementDirection(sensors[0], sensors[1], ref TextBlockInValue, ref TextBlockOutValue,ref TextBlockTotalInsideValue, ref TextBlockMessage);
             //new TwoSensorsDetectingMovementDirection(sensors[0], sensors[1], ref TextBlockInValue, ref TextBlockOutValue, ref TextBlockTotalInsideValue);
         }
     }

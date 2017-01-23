@@ -202,7 +202,7 @@ namespace HC_SR04_DistanceSensor
         List<double> mesuringStandardList = new List<double>();
         List<double> mesuringList = new List<double>();
 
-        public double StandardDistance { get; private set; } = -1;
+        public double StandardDistance { get; set; } = -1;
 
         public GpioPin Pin_trig { get; private set; }
         public GpioPin Pin_echo { get; private set; }
