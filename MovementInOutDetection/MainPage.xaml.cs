@@ -209,6 +209,11 @@ namespace MovementInOutDetection
 
         private void ButtonStartCounting_Click(object sender, RoutedEventArgs e)
         {
+            sensors[0].InitializePins(PIN_TRIG_SENSOR_1, PIN_ECHO_SENSOR_1);
+            sensors[1].InitializePins(PIN_TRIG_SENSOR_2, PIN_ECHO_SENSOR_2);
+
+            Task.Delay(2000);
+
             new TwoSensorsDetectingMovementDirection(sensors[0], sensors[1], ref TextBlockInValue, ref TextBlockOutValue,ref TextBlockTotalInsideValue, ref TextBlockMessage);
             //new TwoSensorsDetectingMovementDirection(sensors[0], sensors[1], ref TextBlockInValue, ref TextBlockOutValue, ref TextBlockTotalInsideValue);
         }

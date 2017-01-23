@@ -49,8 +49,10 @@ namespace MovementInOutDetection
                 sensor1, sensor2
             };
 
-            foreach(var sensor in sensors)
+            foreach (var sensor in sensors)
+            {
                 SensorMeasuresForStandarSearching.Add(sensor.Id, new List<double>());
+            }
 
             isSearchingStandardDistance = true;
 
@@ -85,12 +87,17 @@ namespace MovementInOutDetection
                 
                 if (isSearchingStandardDistance)
                 {
-                    if (++countingTiks; > 50)
+                    if (++countingTiks > 50)
                     {
                         countingTiks = 0;
                         foreach (var sensor in sensors)
-                            SensorMeasuresForStandarSearching[sensor.Id].Add(sensor.MeasuredDistance);
+                        {
+                            if (!sensor.ArePinsInitialized)
+                                break;
 
+                            SensorMeasuresForStandarSearching[sensor.Id].Add(sensor.MeasuredDistance);
+                        }
+                                                
                         if (SensorMeasuresForStandarSearching.First().Value.Count > 4)
                         {
                             foreach (var sensor in sensors)
@@ -98,15 +105,41 @@ namespace MovementInOutDetection
 
                             SensorMeasuresForStandarSearching = null;
 
-                            timer_calculating.Interval = TimeSpan.FromMilliseconds(50);
+                            timer_calculating.Interval = TimeSpan.FromMilliseconds(20);
                             isSearchingStandardDistance = false;
 
-                            textBlockMessage.Text += "Standard values taken. ex: " + sensors.First().StandardDistance.ToString() + Environment.NewLine;
+                            textBlockMessage.Text += "DONE! Standard values taken. ex: " + sensors.First().StandardDistance.ToString() + Environment.NewLine;
+                        }
+                        else
+                        {
+                            textBlockMessage.Text += "En standard value. ex: " + SensorMeasuresForStandarSearching.Last().Value.Last().ToString() + Environment.NewLine;
                         }
                     }
                 }
                 else
                 {
+                    foreach (var sensor in sensors)
+                    {
+                        if (sensor.MeasuredDistance < sensor.StandardDistance - DistanceMarginal)
+                        {
+                            if (!MeasuringsElapsed.Any(l => l.IsStillOpen && l.SensorId.Equals(sensor.Id)))
+                            {
+                                while (lockAdding) { }
+                                MeasuringsElapsed.Add(new Lapse(sensor.Id));
+                            }
+
+                        }
+                        else
+                        {
+                            if (MeasuringsElapsed.Any(l => l.IsStillOpen && l.SensorId.Equals(sensor.Id)))
+                            {
+                                while (lockAdding) { }
+                                MeasuringsElapsed.First(l => l.IsStillOpen && l.SensorId.Equals(sensor.Id)).CloseLapse();
+                                CalculateMeasuringsElapsed();
+                            }
+                        }
+                    }
+                    /*
                     Parallel.ForEach(new int[2] { 0, 1 }, sensorIndex =>
                     {
                         if (sensors[sensorIndex].MeasuredDistance < sensors[sensorIndex].StandardDistance - DistanceMarginal)
@@ -123,6 +156,7 @@ namespace MovementInOutDetection
                             }
                         }
                     });
+                    */
                 }
             }
             catch (Exception ex)
@@ -133,48 +167,60 @@ namespace MovementInOutDetection
         }
 
         List<Lapse> MeasuringsElapsed = new List<Lapse>();
+        private bool lockAdding = false;
         private bool isSearchingStandardDistance;
 
         private void CalculateMeasuringsElapsed()
         {
-            var MeasuringsElapsedWorkingCopy = MeasuringsElapsed;
-            if (MeasuringsElapsedWorkingCopy.Count(m => m.IsStillOpen) == 2)
+            try
             {
-                if (MeasuringsElapsedWorkingCopy.Select(m => m.SensorId).Distinct().Count() == 2)
-                {
-                    // Processing is here
-                    var comingFrom = MeasuringsElapsedWorkingCopy.First(m => m.Started == MeasuringsElapsedWorkingCopy.Min(mm => mm.Started)).SensorId;
-                    var passDuration = MeasuringsElapsedWorkingCopy.Min(m => m.Closed) - MeasuringsElapsedWorkingCopy.Min(m => m.Started);
 
-                    if (comingFrom == sensors[0].Id)
+
+                var MeasuringsElapsedWorkingCopy = MeasuringsElapsed;
+                if (MeasuringsElapsedWorkingCopy.Count(m => !m.IsStillOpen) == 2)
+                {
+                    if (MeasuringsElapsedWorkingCopy.Select(m => m.SensorId).Distinct().Count() == 2)
                     {
-                        TotalPassIn++;
-                        TotalInside++;
+                        // Processing is here
+                        var comingFrom = MeasuringsElapsedWorkingCopy.First(m => m.Started == MeasuringsElapsedWorkingCopy.Min(mm => mm.Started)).SensorId;
+                        var passDuration = MeasuringsElapsedWorkingCopy.Min(m => m.Closed) - MeasuringsElapsedWorkingCopy.Min(m => m.Started);
+
+                        if (comingFrom == sensors[0].Id)
+                        {
+                            TotalPassIn++;
+                            TotalInside++;
+                        }
+                        else
+                        {
+                            TotalPassOut++;
+                            TotalInside--;
+                        }
+
+                        lockAdding = true;
+                        MeasuringsElapsedWorkingCopy.ForEach(mwc => MeasuringsElapsed.RemoveAll(m => m.Id.Equals(mwc.Id)));
+                        sfgsdfds
+                        lockAdding = false;
+                        // ----------------
+
+                        //Special only for this pilot app
+                        textBlockIn.Text = TotalPassIn.ToString();
+                        textBlockOut.Text = TotalPassOut.ToString();
+                        textBlockTotal.Text = TotalInside.ToString();
+
+                        // ----------------
+
                     }
                     else
                     {
-                        TotalPassOut++;
-                        TotalInside--;
-                    }
-
-                    lock (MeasuringsElapsed)
-                        MeasuringsElapsedWorkingCopy.ForEach(mwc => MeasuringsElapsed.RemoveAll(m => m.Id.Equals(mwc.Id)));
-
-                    // ----------------
-
-                    //Special only for this pilot app
-                    textBlockIn.Text = TotalPassIn.ToString();
-                    textBlockOut.Text = TotalPassOut.ToString();
-                    textBlockTotal.Text = TotalInside.ToString();
-
-                    // ----------------
-
-                }
-                else
-                {
-                    lock (MeasuringsElapsed)
+                        lockAdding = true;
                         MeasuringsElapsed.RemoveAll(m => m.Closed != MeasuringsElapsedWorkingCopy.Max(mwc => mwc.Closed));
+                        lockAdding = false;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                textBlockMessage.Text += ex.Message;
             }
         }
     }

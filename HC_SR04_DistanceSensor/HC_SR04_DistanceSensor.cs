@@ -354,7 +354,7 @@ namespace HC_SR04_DistanceSensor
         public double MeasuringTimerInterval { get; set; } = 50;
         public double AverageCalculatingMarginal { get; set; } = 10;
         public int MaxValueForDistance { get; set; }= 300;
-        public int MaxItemInCalculatingQueue { get; set; } = 30;
+        public int MaxItemInCalculatingQueue { get; set; } = 15;
         public double DurationFactorForDistanceClaculation { get; set; } = 17900;//19000; // 18500;//17150; //17900;
 
     }
