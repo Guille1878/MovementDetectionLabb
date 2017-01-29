@@ -12,7 +12,7 @@ namespace GPIOExtention
    
     public class GPIO
     {
-        private const int MAXIMUN_TIME_TO_WAIT_IN_MILLISECONDS = 100;
+        private const int MAXIMUN_TIME_TO_WAIT_IN_MILLISECONDS = 11;
 
         private static ManualResetEvent manualResetEvent = new ManualResetEvent(false);
         public static void MicrosecondsDelay(int delayMicroseconds)

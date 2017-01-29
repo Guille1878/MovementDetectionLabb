@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Web;
 
 namespace IndoorPlaceInformationAPI.Models
@@ -8,17 +9,21 @@ namespace IndoorPlaceInformationAPI.Models
     /// <summary>
     /// Places Model
     /// </summary>
+    [DataContract]
     public class Place
     {
         /// <summary>
         /// Id 
         /// </summary>
-        public Guid Id { get; }
+        [DataMember]
+
+        public Guid Id { get; set; }
 
         /// <summary>
         /// Name
         /// </summary>
-        public string Name { get; }
+        [DataMember]
+        public string Name { get; set; }
 
         /// <summary>
         /// Places Constructor
@@ -29,13 +34,19 @@ namespace IndoorPlaceInformationAPI.Models
         {
             Id = Guid.NewGuid();
             Name = name;
-            Entrance[] Entrance = entrance;
+            Entrance = entrance;
         }
 
+        /// <summary>
+        /// Places Constructor with Id
+        /// </summary>
+        /// <param name="id">
+        /// Id in Guid format identifying the place.
+        /// </param>
         public Place(Guid id)
         {
-            Id = Guid.NewGuid();
-            Name = id.ToString();
+            Id = id;
+            Name = "Sky City Big WC";
             Entrance = new Entrance[1] {
                 new Entrance("Main door", new SensorBoard[2]
                 {
@@ -43,34 +54,77 @@ namespace IndoorPlaceInformationAPI.Models
                     new SensorBoard(new Sensor(Guid.NewGuid(),"BIn",13,13), new Sensor(Guid.NewGuid(),"BOut",13,13))
                 })
             };
+            Capacity = 150;
+            TotalPeopleInside = 132;
+            TotalPeoplePassIn = 35321312;
+            TotalPeoplePassOut = 35321180;
+            LastService = DateTime.Now.AddMinutes(-14);
+            Type = PlaceType.ToiletMix;
+
         }
 
         /// <summary>
         /// Entrances
         /// </summary>
+        [DataMember]
         public Entrance[] Entrance { get; set; }
         /// <summary>
         /// Counting Total People Inside
         /// </summary>
-        public int TotalPeopleInside { get; private set; }
+        [DataMember]
+        public int TotalPeopleInside { get; set; }
         /// <summary>
         /// Counting Total People Pass IN
         /// </summary>
-        public int TotalPeoplePassIn { get; private set; }
+        [DataMember]
+        public int TotalPeoplePassIn { get; set; }
         /// <summary>
         /// Counting Total People Pass OUT
         /// </summary>
-        public int TotalPeoplePassOut { get; private set; }
+        [DataMember]
+        public int TotalPeoplePassOut { get; set; }
+
+        /// <summary>
+        /// Estimated how many people get place in the place.
+        /// </summary>
+        [DataMember]
+        public int Capacity { get; set; }
+
+        /// <summary>
+        /// Last time the place got a Service.
+        /// </summary>
+        [DataMember]
+        public DateTime LastService { get; set; }
+
+        /// <summary>
+        /// Type of place
+        /// </summary>
+        [DataMember]
+        public PlaceType Type { get; set; }
+
     }
 
     /// <summary>
     /// Entrance Model
     /// </summary>
+    [DataContract]
     public class Entrance
     {
-        public Guid Id { get; }
-        public string Name { get; }
+        /// <summary>
+        /// Entrance Id
+        /// </summary>
+        [DataMember]
+        public Guid Id { get; set; }
+        /// <summary>
+        /// Entrance name
+        /// </summary>
+        [DataMember]
+        public string Name { get; set; }
 
+        /// <summary>
+        /// Bord with sensor and one raspberry
+        /// </summary>
+        [DataMember]
         public SensorBoard[] SensorBoards;
         /// <summary>
         /// Entrance Constructor
@@ -104,15 +158,18 @@ namespace IndoorPlaceInformationAPI.Models
     /// <summary>
     /// SensorBoard Model
     /// </summary>
+    [DataContract]
     public class SensorBoard
     {
         /// <summary>
         /// In Sensor
         /// </summary>
+        [DataMember]
         public Sensor InSensor { get; set; }
         /// <summary>
         /// Out Sensor
         /// </summary>
+        [DataMember]
         public Sensor OutSensor { get; set; }
         /// <summary>
         /// Sensor Constructor
@@ -132,18 +189,29 @@ namespace IndoorPlaceInformationAPI.Models
     /// <summary>
     /// Sensor Model
     /// </summary>
+    [DataContract]
     public class Sensor
     {
-        Guid Id { get; }
-        string Name { get; }
+        /// <summary>
+        /// Sensor Id
+        /// </summary>
+        [DataMember]
+        public Guid Id { get; set; }
+        /// <summary>
+        /// Sensor name
+        /// </summary>
+        [DataMember]
+        public string Name { get; set; }
         /// <summary>
         /// Pin number for Trig from Sensor to Raspberry
         /// </summary>
-        public short PinTrig { get; }
+        [DataMember]
+        public short PinTrig { get; set; }
         /// <summary>
         /// Pin number for Echo from Sensor to Raspberry
         /// </summary>
-        public short PinEcho { get; }
+        [DataMember]
+        public short PinEcho { get; set; }
         /// <summary>
         /// Sensor Constructor
         /// </summary>

@@ -20,6 +20,7 @@ namespace MovementInOutDetection
         }
 
         DispatcherTimer timerMesuring;
+        DispatcherTimer timer;
         DispatcherTimer timerReading;
 
         private const int PIN_TRIG_SENSOR_1 = 22;
@@ -49,35 +50,44 @@ namespace MovementInOutDetection
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
 
-            
 
         }
 
+        Stopwatch timing;
+        private void Timer_Tick(object sender, object e)
+        {
+            try
+            {
+                TextBlockTimeValue.Text = timing.Elapsed.ToString();
+            }
+            catch (Exception ex)
+            {
+                TextBlockMessage.Text = ex.ToString();
+            }
+        }
         private void TimerReading_Tick(object sender, object e)
         {
             try
             {
-                    TextBlockDistanceSensro1Value.Text = sensors[0].MeasuredDistance.ToString() + " cm";
-                    TextBlockDistanceSensro2Value.Text = sensors[1].MeasuredDistance.ToString() + " cm";
-                    //TextBlockDistanceSensro3Value.Text = sensors[2].MeasuredDistance.ToString() + " cm";
-                    //TextBlockDistanceSensro4Value.Text = sensors[3].MeasuredDistance.ToString() + " cm";
+                TextBlockDistanceSensro1Value.Text = sensors[0].MeasuredDistance.ToString() + " cm";
+                TextBlockDistanceSensro2Value.Text = sensors[1].MeasuredDistance.ToString() + " cm";
+                //TextBlockDistanceSensro3Value.Text = sensors[2].MeasuredDistance.ToString() + " cm";
+                //TextBlockDistanceSensro4Value.Text = sensors[3].MeasuredDistance.ToString() + " cm";
              
             }
             catch (Exception ex)
             {
                 TextBlockMessage.Text = ex.ToString();
             }
-
         }
 
-        Stopwatch timing;
+        
 
         private void TimerMesuring_Tick(object sender, object e)
         {
             try
             {
 
-                TextBlockTimeValue.Text = timing.Elapsed.ToString();
 
                 if (StardedSettingStandardDistances != null)
                 {
@@ -133,10 +143,12 @@ namespace MovementInOutDetection
                 //{
                 //    sensor.AddMesure();
                 //});
+                /*
                 foreach (var sensor in sensors.Where(s => s.ArePinsInitialized))
                 {
                     sensor.AddMesure();
                 }
+                */
 
             }
             catch (Exception ex)
@@ -168,7 +180,7 @@ namespace MovementInOutDetection
         {
             timerMesuring = new DispatcherTimer()
             {
-                Interval = TimeSpan.FromMilliseconds(50)
+                Interval = TimeSpan.FromMilliseconds(20)
             };
             timerMesuring.Tick += TimerMesuring_Tick;
 
@@ -209,12 +221,29 @@ namespace MovementInOutDetection
 
         private void ButtonStartCounting_Click(object sender, RoutedEventArgs e)
         {
-            sensors[0].InitializePins(PIN_TRIG_SENSOR_1, PIN_ECHO_SENSOR_1);
-            sensors[1].InitializePins(PIN_TRIG_SENSOR_2, PIN_ECHO_SENSOR_2);
+            try
+            {
+                timing = Stopwatch.StartNew();
+                timer = new DispatcherTimer()
+                {
+                    Interval = TimeSpan.FromMilliseconds(20)
+                };
+                timer.Tick += Timer_Tick;
 
-            Task.Delay(2000);
+                timer.Start();
 
-            new TwoSensorsDetectingMovementDirection(sensors[0], sensors[1], ref TextBlockInValue, ref TextBlockOutValue,ref TextBlockTotalInsideValue, ref TextBlockMessage);
+                sensors[0].InitializePins(PIN_TRIG_SENSOR_1, PIN_ECHO_SENSOR_1);
+                sensors[1].InitializePins(PIN_TRIG_SENSOR_2, PIN_ECHO_SENSOR_2);
+
+                Task.Delay(2000);
+            
+                var detecting = new TwoSensorsDetectingMovementDirection(sensors[0], sensors[1], ref TextBlockInValue, ref TextBlockOutValue,ref TextBlockTotalInsideValue, ref TextBlockMessage);
+
+            }
+            catch (Exception ex)
+            {
+                TextBlockMessage.Text = ex.Message;
+            }
             //new TwoSensorsDetectingMovementDirection(sensors[0], sensors[1], ref TextBlockInValue, ref TextBlockOutValue, ref TextBlockTotalInsideValue);
         }
     }

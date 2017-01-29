@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace MovementInOutDetection
 {
-    public class TwoSensorsDetectingMovementDirection
+    public sealed class TwoSensorsDetectingMovementDirection
     {
 
         public TwoSensorsDetectingMovementDirection() { }
@@ -125,7 +125,9 @@ namespace MovementInOutDetection
                             if (!MeasuringsElapsed.Any(l => l.IsStillOpen && l.SensorId.Equals(sensor.Id)))
                             {
                                 while (lockAdding) { }
+                                lockAdding = true;
                                 MeasuringsElapsed.Add(new Lapse(sensor.Id));
+                                lockAdding = false;
                             }
 
                         }
@@ -134,7 +136,9 @@ namespace MovementInOutDetection
                             if (MeasuringsElapsed.Any(l => l.IsStillOpen && l.SensorId.Equals(sensor.Id)))
                             {
                                 while (lockAdding) { }
+                                lockAdding = true;
                                 MeasuringsElapsed.First(l => l.IsStillOpen && l.SensorId.Equals(sensor.Id)).CloseLapse();
+                                lockAdding = false;
                                 CalculateMeasuringsElapsed();
                             }
                         }
@@ -196,9 +200,11 @@ namespace MovementInOutDetection
                             TotalInside--;
                         }
 
+                        while (lockAdding) { }
                         lockAdding = true;
-                        MeasuringsElapsedWorkingCopy.ForEach(mwc => MeasuringsElapsed.RemoveAll(m => m.Id.Equals(mwc.Id)));
-                        sfgsdfds
+                        MeasuringsElapsed.RemoveAll(m => MeasuringsElapsedWorkingCopy.Any(mwc => m.Id.Equals(mwc.Id)));
+                        //MeasuringsElapsedWorkingCopy.ForEach(mwc => MeasuringsElapsed.RemoveAll(m => m.Id.Equals(mwc.Id)));
+                        //sfgsdfds
                         lockAdding = false;
                         // ----------------
 
@@ -212,6 +218,7 @@ namespace MovementInOutDetection
                     }
                     else
                     {
+                        while (lockAdding) { }
                         lockAdding = true;
                         MeasuringsElapsed.RemoveAll(m => m.Closed != MeasuringsElapsedWorkingCopy.Max(mwc => mwc.Closed));
                         lockAdding = false;

@@ -7,6 +7,9 @@ using System.Web.Http;
 using Swashbuckle.Swagger.Annotations;
 using IndoorPlaceInformationAPI.Models;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace IndoorPlaceInformationAPI.Controllers
 {
@@ -21,14 +24,150 @@ namespace IndoorPlaceInformationAPI.Controllers
         /// </summary>
         /// <returns>A list of Places</returns>
         [SwaggerOperation("GetAll")]
+        [EnumDataType(typeof(PlaceType))]
         public IEnumerable<Place> Get()
         {
 
             try
             {
-                return new Place[1]
+                return new Place[6]
                 {
-                    new Place("test", new Entrance[0])
+                    new Place("Sky City Big WC Men", new Entrance[1]
+                    {
+                        new Entrance("Main Door", 
+                              new SensorBoard[2]
+                              {
+                                  new SensorBoard
+                                  {
+                                       InSensor = new Sensor(Guid.NewGuid(),"Inside sensor", 12,23),
+                                       OutSensor = new Sensor(Guid.NewGuid(),"Outside sensor", 27,26),
+                                  },
+                                  new SensorBoard
+                                  {
+                                       InSensor = new Sensor(Guid.NewGuid(),"Inside sensor", 12,23),
+                                       OutSensor = new Sensor(Guid.NewGuid(),"Outside sensor", 27,26),
+                                  }
+                              }
+                        )
+                    })
+                    {
+                        Capacity = 60,
+                        TotalPeopleInside = 34,
+                        TotalPeoplePassIn = 5651,
+                        TotalPeoplePassOut = 5617,
+                        LastService = DateTime.Now.AddMinutes(-32),
+                        Type = PlaceType.ToiletGentlemen
+                    },
+                    new Place("Sky City Big WC Women", new Entrance[1]
+                    {
+                        new Entrance("Main Door",
+                              new SensorBoard[2]
+                              {
+                                  new SensorBoard
+                                  {
+                                       InSensor = new Sensor(Guid.NewGuid(),"Inside sensor", 12,23),
+                                       OutSensor = new Sensor(Guid.NewGuid(),"Outside sensor", 27,26),
+                                  },
+                                  new SensorBoard
+                                  {
+                                       InSensor = new Sensor(Guid.NewGuid(),"Inside sensor", 12,23),
+                                       OutSensor = new Sensor(Guid.NewGuid(),"Outside sensor", 27,26),
+                                  }
+                              }
+                        )
+                    })
+                    {
+                        Capacity = 60,
+                        TotalPeopleInside = 8,
+                        TotalPeoplePassIn = 81250,
+                        TotalPeoplePassOut = 81242,
+                        LastService = DateTime.Now.AddMinutes(-5),
+                        Type = PlaceType.ToiletLadies
+                    },
+                    new Place("Terminal 2 WC", new Entrance[1]
+                    {
+                        new Entrance("Main Door",
+                              new SensorBoard[1]
+                              {
+                                  new SensorBoard
+                                  {
+                                       InSensor = new Sensor(Guid.NewGuid(),"Inside sensor", 12,23),
+                                       OutSensor = new Sensor(Guid.NewGuid(),"Outside sensor", 27,26),
+                                  }
+                              }
+                        )
+                    })
+                    {
+                        Capacity = 4,
+                        TotalPeopleInside = 1,
+                        TotalPeoplePassIn = 668,
+                        TotalPeoplePassOut = 667,
+                        LastService = DateTime.Now.AddMinutes(-197),
+                        Type = PlaceType.ToiletMix
+                    },
+                    new Place("Terminal 3 WC", new Entrance[1]
+                    {
+                        new Entrance("Main Door",
+                              new SensorBoard[1]
+                              {
+                                  new SensorBoard
+                                  {
+                                       InSensor = new Sensor(Guid.NewGuid(),"Inside sensor", 12,23),
+                                       OutSensor = new Sensor(Guid.NewGuid(),"Outside sensor", 27,26),
+                                  }
+                              }
+                        )
+                    })
+                    {
+                        Capacity = 4,
+                        TotalPeopleInside = 4,
+                        TotalPeoplePassIn = 68,
+                        TotalPeoplePassOut = 64,
+                        LastService = DateTime.Now.AddMinutes(-289),
+                        Type = PlaceType.ToiletMix
+                    },
+                    new Place("Terminal 4 WC", new Entrance[1]
+                    {
+                        new Entrance("Main Door",
+                              new SensorBoard[1]
+                              {
+                                  new SensorBoard
+                                  {
+                                       InSensor = new Sensor(Guid.NewGuid(),"Inside sensor", 12,23),
+                                       OutSensor = new Sensor(Guid.NewGuid(),"Outside sensor", 27,26),
+                                  }
+                              }
+                        )
+                    })
+                    {
+                        Capacity = 2,
+                        TotalPeopleInside = 3,
+                        TotalPeoplePassIn = 9668,
+                        TotalPeoplePassOut = 9665,
+                        LastService = DateTime.Now.AddMinutes(-19),
+                        Type = PlaceType.ToiletMix
+                    },
+                    new Place("Terminal 4 WC Handicap", new Entrance[1]
+                    {
+                        new Entrance("Main Door",
+                              new SensorBoard[1]
+                              {
+                                  new SensorBoard
+                                  {
+                                       InSensor = new Sensor(Guid.NewGuid(),"Inside sensor", 12,23),
+                                       OutSensor = new Sensor(Guid.NewGuid(),"Outside sensor", 27,26),
+                                  }
+                              }
+                        )
+                    })
+                    {
+                        Capacity = 1,
+                        TotalPeopleInside = 1,
+                        TotalPeoplePassIn = 35,
+                        TotalPeoplePassOut = 34,
+                        LastService = DateTime.Now.AddMinutes(-574),
+                        Type = PlaceType.ToiletAccessible
+                    }
                 };
             }
             catch
@@ -36,22 +175,56 @@ namespace IndoorPlaceInformationAPI.Controllers
                 return new Place[0];
             }
         }
-           
+        /// <summary>
+        /// Get a Sensor
+        /// </summary>
+        /// <returns></returns>
+        [SwaggerOperation("GetAll")]
+        public Sensor GetSensor()
+        {
+            return new Sensor(Guid.NewGuid(), "",12,32);
+        }
 
         // GET api/places/5
         /// <summary>
         /// GetById
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">
+        /// Id in Guid format identifying the place.
+        /// </param>
+        /// <returns>
+        /// One place from the Id you gave.
+        /// </returns>
         [SwaggerOperation("GetById")]
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
-        public Place Get(int id)
+        [EnumDataType(typeof(PlaceType))]
+        public Place Get(string id)
         {
             try
             {
-                return new Place("Test", new Entrance[0]);
+                return new Place(id, new Entrance[1]
+                {
+                    new Entrance
+                    {
+                            SensorBoards = new SensorBoard[1]
+                            {
+                                new SensorBoard
+                                {
+                                    InSensor = new Sensor(Guid.NewGuid(),"Inside sensor", 12,23),
+                                    OutSensor = new Sensor(Guid.NewGuid(),"Outside sensor", 27,26),
+                                }
+                            }
+                    }
+                })
+                {
+                    Capacity = 150,
+                    TotalPeopleInside = 132,
+                    TotalPeoplePassIn = 35321312,
+                    TotalPeoplePassOut = 35321180,
+                    LastService = DateTime.Now.AddMinutes(-14),
+                    Type = PlaceType.ToiletMix
+                };
             }
             catch
             {
@@ -63,8 +236,12 @@ namespace IndoorPlaceInformationAPI.Controllers
         /// <summary>
         /// StartDetecting
         /// </summary>
-        /// <param name="placeId"></param>
-        /// <returns></returns>
+        /// <param name="placeId">
+        /// PlaceId in Guid format identifying the place.
+        /// </param>
+        /// <returns>
+        /// It activate the device/s of the place refering to the Id in the parameter. The device/s is/are going to return measures counting people coming in and out from the place.
+        /// </returns>
         [SwaggerOperation("Get")]
         [SwaggerResponse(HttpStatusCode.OK)]
         [SwaggerResponse(HttpStatusCode.NotFound)]
@@ -88,7 +265,9 @@ namespace IndoorPlaceInformationAPI.Controllers
         /// <summary>
         /// StopDetecting
         /// </summary>
-        /// <param name="placeId"></param>
+        /// <param name="placeId">
+        /// PlaceId in Guid format identifying the place.
+        /// </param>
         /// <returns></returns>
         [SwaggerOperation("Get")]
         [SwaggerResponse(HttpStatusCode.OK)]
