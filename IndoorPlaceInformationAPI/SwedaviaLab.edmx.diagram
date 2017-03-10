@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="48da787a3d114284849568f61feec0c2" Name="Diagram1" ShowGrid="true">
+        <EntityTypeShape EntityType="SwedaviaLabModel.Entrance" Width="1.5" PointX="0.75" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="SwedaviaLabModel.Place" Width="1.5" PointX="1.5" PointY="11.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="SwedaviaLabModel.Sensor" Width="1.5" PointX="0.75" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="SwedaviaLabModel.SensorBoard" Width="1.5" PointX="3" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="SwedaviaLabModel.Type" Width="1.5" PointX="1.5" PointY="14.875" IsExpanded="true" />
+        <AssociationConnector Association="SwedaviaLabModel.FK_Entrance_Place" ManuallyRouted="false" />
+        <AssociationConnector Association="SwedaviaLabModel.FK_SensorBoard_Entrance" ManuallyRouted="false" />
+        <AssociationConnector Association="SwedaviaLabModel.FK_Place_Type" ManuallyRouted="false" />
+        <AssociationConnector Association="SwedaviaLabModel.FK_SensorBoard_Sensor" ManuallyRouted="false" />
+        <AssociationConnector Association="SwedaviaLabModel.FK_SensorBoard_Sensor1" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

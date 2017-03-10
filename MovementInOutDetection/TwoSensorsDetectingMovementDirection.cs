@@ -118,16 +118,17 @@ namespace MovementInOutDetection
                 }
                 else
                 {
+                    /*
                     foreach (var sensor in sensors)
                     {
                         if (sensor.MeasuredDistance < sensor.StandardDistance - DistanceMarginal)
                         {
                             if (!MeasuringsElapsed.Any(l => l.IsStillOpen && l.SensorId.Equals(sensor.Id)))
                             {
-                                while (lockAdding) { }
-                                lockAdding = true;
+                                //while (lockAdding) { }
+                                //lockAdding = true;
                                 MeasuringsElapsed.Add(new Lapse(sensor.Id));
-                                lockAdding = false;
+                                //lockAdding = false;
                             }
 
                         }
@@ -135,15 +136,16 @@ namespace MovementInOutDetection
                         {
                             if (MeasuringsElapsed.Any(l => l.IsStillOpen && l.SensorId.Equals(sensor.Id)))
                             {
-                                while (lockAdding) { }
-                                lockAdding = true;
+                                //while (lockAdding) { }
+                                //lockAdding = true;
                                 MeasuringsElapsed.First(l => l.IsStillOpen && l.SensorId.Equals(sensor.Id)).CloseLapse();
-                                lockAdding = false;
+                                //lockAdding = false;
                                 CalculateMeasuringsElapsed();
                             }
                         }
                     }
-                    /*
+                    */
+                    
                     Parallel.ForEach(new int[2] { 0, 1 }, sensorIndex =>
                     {
                         if (sensors[sensorIndex].MeasuredDistance < sensors[sensorIndex].StandardDistance - DistanceMarginal)
@@ -160,7 +162,7 @@ namespace MovementInOutDetection
                             }
                         }
                     });
-                    */
+                    
                 }
             }
             catch (Exception ex)
@@ -171,7 +173,7 @@ namespace MovementInOutDetection
         }
 
         List<Lapse> MeasuringsElapsed = new List<Lapse>();
-        private bool lockAdding = false;
+        //private bool lockAdding = false;
         private bool isSearchingStandardDistance;
 
         private void CalculateMeasuringsElapsed()
@@ -200,28 +202,27 @@ namespace MovementInOutDetection
                             TotalInside--;
                         }
 
-                        while (lockAdding) { }
-                        lockAdding = true;
+                        //while (lockAdding) { }
+                        //lockAdding = true;
                         MeasuringsElapsed.RemoveAll(m => MeasuringsElapsedWorkingCopy.Any(mwc => m.Id.Equals(mwc.Id)));
                         //MeasuringsElapsedWorkingCopy.ForEach(mwc => MeasuringsElapsed.RemoveAll(m => m.Id.Equals(mwc.Id)));
                         //sfgsdfds
-                        lockAdding = false;
+                        //lockAdding = false;
                         // ----------------
 
-                        //Special only for this pilot app
+                        // Special only for this pilot app
                         textBlockIn.Text = TotalPassIn.ToString();
                         textBlockOut.Text = TotalPassOut.ToString();
                         textBlockTotal.Text = TotalInside.ToString();
-
                         // ----------------
 
                     }
                     else
                     {
-                        while (lockAdding) { }
-                        lockAdding = true;
+                        //while (lockAdding) { }
+                        //lockAdding = true;
                         MeasuringsElapsed.RemoveAll(m => m.Closed != MeasuringsElapsedWorkingCopy.Max(mwc => mwc.Closed));
-                        lockAdding = false;
+                        //lockAdding = false;
                     }
                 }
             }

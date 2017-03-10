@@ -1,0 +1,457 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="SwedaviaLabModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Entrance">
+          <Key>
+            <PropertyRef Name="EntranceId" />
+          </Key>
+          <Property Name="EntranceId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PlaceId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Place">
+          <Key>
+            <PropertyRef Name="PlaceId" />
+          </Key>
+          <Property Name="PlaceId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="TotalPeopleInside" Type="bigint" Nullable="false" />
+          <Property Name="Capacity" Type="int" Nullable="false" />
+          <Property Name="LastService" Type="datetime" />
+          <Property Name="TypeId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sensor">
+          <Key>
+            <PropertyRef Name="SensorId" />
+          </Key>
+          <Property Name="SensorId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" />
+          <Property Name="PinTrigd" Type="smallint" />
+          <Property Name="PinEchod" Type="smallint" />
+          <Property Name="InsideOne" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SensorBoard">
+          <Key>
+            <PropertyRef Name="SensorBoardId" />
+          </Key>
+          <Property Name="SensorBoardId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="EntranceId" Type="uniqueidentifier" />
+          <Property Name="InSensorId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="OutSensorId" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Type">
+          <Key>
+            <PropertyRef Name="TypeId" />
+          </Key>
+          <Property Name="TypeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Entrance_Place">
+          <End Role="Place" Type="Self.Place" Multiplicity="1" />
+          <End Role="Entrance" Type="Self.Entrance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Place">
+              <PropertyRef Name="PlaceId" />
+            </Principal>
+            <Dependent Role="Entrance">
+              <PropertyRef Name="PlaceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Place_Type">
+          <End Role="Type" Type="Self.Type" Multiplicity="1" />
+          <End Role="Place" Type="Self.Place" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Type">
+              <PropertyRef Name="TypeId" />
+            </Principal>
+            <Dependent Role="Place">
+              <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SensorBoard_Entrance">
+          <End Role="Entrance" Type="Self.Entrance" Multiplicity="0..1" />
+          <End Role="SensorBoard" Type="Self.SensorBoard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Entrance">
+              <PropertyRef Name="EntranceId" />
+            </Principal>
+            <Dependent Role="SensorBoard">
+              <PropertyRef Name="EntranceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SensorBoard_Sensor">
+          <End Role="Sensor" Type="Self.Sensor" Multiplicity="1" />
+          <End Role="SensorBoard" Type="Self.SensorBoard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sensor">
+              <PropertyRef Name="SensorId" />
+            </Principal>
+            <Dependent Role="SensorBoard">
+              <PropertyRef Name="InSensorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SensorBoard_Sensor1">
+          <End Role="Sensor" Type="Self.Sensor" Multiplicity="1" />
+          <End Role="SensorBoard" Type="Self.SensorBoard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sensor">
+              <PropertyRef Name="SensorId" />
+            </Principal>
+            <Dependent Role="SensorBoard">
+              <PropertyRef Name="OutSensorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="sp_Place_GetAllStructure" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="sp_SensorTransaction_Add" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="SensorId" Type="uniqueidentifier" Mode="In" />
+        </Function>
+        <EntityContainer Name="SwedaviaLabModelStoreContainer">
+          <EntitySet Name="Entrance" EntityType="Self.Entrance" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Place" EntityType="Self.Place" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Sensor" EntityType="Self.Sensor" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SensorBoard" EntityType="Self.SensorBoard" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Type" EntityType="Self.Type" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Entrance_Place" Association="Self.FK_Entrance_Place">
+            <End Role="Place" EntitySet="Place" />
+            <End Role="Entrance" EntitySet="Entrance" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Place_Type" Association="Self.FK_Place_Type">
+            <End Role="Type" EntitySet="Type" />
+            <End Role="Place" EntitySet="Place" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SensorBoard_Entrance" Association="Self.FK_SensorBoard_Entrance">
+            <End Role="Entrance" EntitySet="Entrance" />
+            <End Role="SensorBoard" EntitySet="SensorBoard" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SensorBoard_Sensor" Association="Self.FK_SensorBoard_Sensor">
+            <End Role="Sensor" EntitySet="Sensor" />
+            <End Role="SensorBoard" EntitySet="SensorBoard" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SensorBoard_Sensor1" Association="Self.FK_SensorBoard_Sensor1">
+            <End Role="Sensor" EntitySet="Sensor" />
+            <End Role="SensorBoard" EntitySet="SensorBoard" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SwedaviaLabModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Entrance">
+          <Key>
+            <PropertyRef Name="EntranceId" />
+          </Key>
+          <Property Name="EntranceId" Type="Guid" Nullable="false" />
+          <Property Name="PlaceId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Place" Relationship="Self.FK_Entrance_Place" FromRole="Entrance" ToRole="Place" />
+          <NavigationProperty Name="SensorBoard" Relationship="Self.FK_SensorBoard_Entrance" FromRole="Entrance" ToRole="SensorBoard" />
+        </EntityType>
+        <EntityType Name="Place">
+          <Key>
+            <PropertyRef Name="PlaceId" />
+          </Key>
+          <Property Name="PlaceId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="TotalPeopleInside" Type="Int64" Nullable="false" />
+          <Property Name="Capacity" Type="Int32" Nullable="false" />
+          <Property Name="LastService" Type="DateTime" Precision="3" />
+          <Property Name="TypeId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Entrance" Relationship="Self.FK_Entrance_Place" FromRole="Place" ToRole="Entrance" />
+          <NavigationProperty Name="Type" Relationship="Self.FK_Place_Type" FromRole="Place" ToRole="Type" />
+        </EntityType>
+        <EntityType Name="Sensor">
+          <Key>
+            <PropertyRef Name="SensorId" />
+          </Key>
+          <Property Name="SensorId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PinTrigd" Type="Int16" />
+          <Property Name="PinEchod" Type="Int16" />
+          <Property Name="InsideOne" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="SensorBoard" Relationship="Self.FK_SensorBoard_Sensor" FromRole="Sensor" ToRole="SensorBoard" />
+          <NavigationProperty Name="SensorBoard1" Relationship="Self.FK_SensorBoard_Sensor1" FromRole="Sensor" ToRole="SensorBoard" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" />
+        </EntityType>
+        <EntityType Name="SensorBoard">
+          <Key>
+            <PropertyRef Name="SensorBoardId" />
+          </Key>
+          <Property Name="SensorBoardId" Type="Guid" Nullable="false" />
+          <Property Name="EntranceId" Type="Guid" />
+          <Property Name="InSensorId" Type="Guid" Nullable="false" />
+          <Property Name="OutSensorId" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Entrance" Relationship="Self.FK_SensorBoard_Entrance" FromRole="SensorBoard" ToRole="Entrance" />
+          <NavigationProperty Name="SensorInside" Relationship="Self.FK_SensorBoard_Sensor" FromRole="SensorBoard" ToRole="Sensor" />
+          <NavigationProperty Name="SensorOutside" Relationship="Self.FK_SensorBoard_Sensor1" FromRole="SensorBoard" ToRole="Sensor" />
+        </EntityType>
+        <EntityType Name="Type">
+          <Key>
+            <PropertyRef Name="TypeId" />
+          </Key>
+          <Property Name="TypeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Place" Relationship="Self.FK_Place_Type" FromRole="Type" ToRole="Place" />
+        </EntityType>
+        <Association Name="FK_Entrance_Place">
+          <End Role="Place" Type="Self.Place" Multiplicity="1" />
+          <End Role="Entrance" Type="Self.Entrance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Place">
+              <PropertyRef Name="PlaceId" />
+            </Principal>
+            <Dependent Role="Entrance">
+              <PropertyRef Name="PlaceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SensorBoard_Entrance">
+          <End Role="Entrance" Type="Self.Entrance" Multiplicity="0..1" />
+          <End Role="SensorBoard" Type="Self.SensorBoard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Entrance">
+              <PropertyRef Name="EntranceId" />
+            </Principal>
+            <Dependent Role="SensorBoard">
+              <PropertyRef Name="EntranceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Place_Type">
+          <End Role="Type" Type="Self.Type" Multiplicity="1" />
+          <End Role="Place" Type="Self.Place" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Type">
+              <PropertyRef Name="TypeId" />
+            </Principal>
+            <Dependent Role="Place">
+              <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SensorBoard_Sensor">
+          <End Role="Sensor" Type="Self.Sensor" Multiplicity="1" />
+          <End Role="SensorBoard" Type="Self.SensorBoard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sensor">
+              <PropertyRef Name="SensorId" />
+            </Principal>
+            <Dependent Role="SensorBoard">
+              <PropertyRef Name="InSensorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SensorBoard_Sensor1">
+          <End Role="Sensor" Type="Self.Sensor" Multiplicity="1" />
+          <End Role="SensorBoard" Type="Self.SensorBoard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Sensor">
+              <PropertyRef Name="SensorId" />
+            </Principal>
+            <Dependent Role="SensorBoard">
+              <PropertyRef Name="OutSensorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SwedaviaLabEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Entrance" EntityType="Self.Entrance" />
+          <EntitySet Name="Place" EntityType="Self.Place" />
+          <EntitySet Name="Sensor" EntityType="Self.Sensor" />
+          <EntitySet Name="SensorBoard" EntityType="Self.SensorBoard" />
+          <EntitySet Name="Type" EntityType="Self.Type" />
+          <AssociationSet Name="FK_Entrance_Place" Association="Self.FK_Entrance_Place">
+            <End Role="Place" EntitySet="Place" />
+            <End Role="Entrance" EntitySet="Entrance" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SensorBoard_Entrance" Association="Self.FK_SensorBoard_Entrance">
+            <End Role="Entrance" EntitySet="Entrance" />
+            <End Role="SensorBoard" EntitySet="SensorBoard" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Place_Type" Association="Self.FK_Place_Type">
+            <End Role="Type" EntitySet="Type" />
+            <End Role="Place" EntitySet="Place" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SensorBoard_Sensor" Association="Self.FK_SensorBoard_Sensor">
+            <End Role="Sensor" EntitySet="Sensor" />
+            <End Role="SensorBoard" EntitySet="SensorBoard" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SensorBoard_Sensor1" Association="Self.FK_SensorBoard_Sensor1">
+            <End Role="Sensor" EntitySet="Sensor" />
+            <End Role="SensorBoard" EntitySet="SensorBoard" />
+          </AssociationSet>
+          <FunctionImport Name="sp_alterdiagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="version" Mode="In" Type="Int32" />
+            <Parameter Name="definition" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="sp_creatediagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="version" Mode="In" Type="Int32" />
+            <Parameter Name="definition" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="sp_dropdiagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(SwedaviaLabModel.sp_helpdiagramdefinition_Result)">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(SwedaviaLabModel.sp_helpdiagrams_Result)">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_Place_GetAllStructure" ReturnType="Collection(SwedaviaLabModel.sp_Place_GetAllStructure_Result)" />
+          <FunctionImport Name="sp_renamediagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="new_diagramname" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_SensorTransaction_Add">
+          <Parameter Name="SensorId" Mode="In" Type="Guid" />
+          </FunctionImport>
+          <FunctionImport Name="sp_upgraddiagrams" />
+        </EntityContainer>
+        <ComplexType Name="sp_helpdiagramdefinition_Result">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="sp_Place_GetAllStructure_Result">
+          <Property Type="Guid" Name="PlaceId" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="Int64" Name="TotalPeopleInside" Nullable="false" />
+          <Property Type="Int32" Name="Capacity" Nullable="false" />
+          <Property Type="DateTime" Name="LastService" Nullable="true" Precision="23" />
+          <Property Type="Int32" Name="TypeId" Nullable="false" />
+          <Property Type="String" Name="TypeName" Nullable="false" MaxLength="50" />
+          <Property Type="Guid" Name="EntranceId" Nullable="false" />
+          <Property Type="String" Name="EntranceName" Nullable="false" MaxLength="50" />
+          <Property Type="Guid" Name="SensorBoardId" Nullable="false" />
+          <Property Type="Guid" Name="InSensorId" Nullable="false" />
+          <Property Type="Guid" Name="OutSensorId" Nullable="false" />
+          <Property Type="Guid" Name="SensorId" Nullable="false" />
+          <Property Type="String" Name="SensorName" Nullable="true" MaxLength="50" />
+          <Property Type="Int16" Name="PinTrigd" Nullable="true" />
+          <Property Type="Int16" Name="PinEchod" Nullable="true" />
+          <Property Type="Boolean" Name="InsideOne" Nullable="false" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SwedaviaLabModelStoreContainer" CdmEntityContainer="SwedaviaLabEntities">
+          <EntitySetMapping Name="Entrance">
+            <EntityTypeMapping TypeName="SwedaviaLabModel.Entrance">
+              <MappingFragment StoreEntitySet="Entrance">
+                <ScalarProperty Name="EntranceId" ColumnName="EntranceId" />
+                <ScalarProperty Name="PlaceId" ColumnName="PlaceId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Place">
+            <EntityTypeMapping TypeName="SwedaviaLabModel.Place">
+              <MappingFragment StoreEntitySet="Place">
+                <ScalarProperty Name="PlaceId" ColumnName="PlaceId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="TotalPeopleInside" ColumnName="TotalPeopleInside" />
+                <ScalarProperty Name="Capacity" ColumnName="Capacity" />
+                <ScalarProperty Name="LastService" ColumnName="LastService" />
+                <ScalarProperty Name="TypeId" ColumnName="TypeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Sensor">
+            <EntityTypeMapping TypeName="SwedaviaLabModel.Sensor">
+              <MappingFragment StoreEntitySet="Sensor">
+                <ScalarProperty Name="SensorId" ColumnName="SensorId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="PinTrigd" ColumnName="PinTrigd" />
+                <ScalarProperty Name="PinEchod" ColumnName="PinEchod" />
+                <ScalarProperty Name="InsideOne" ColumnName="InsideOne" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SensorBoard">
+            <EntityTypeMapping TypeName="SwedaviaLabModel.SensorBoard">
+              <MappingFragment StoreEntitySet="SensorBoard">
+                <ScalarProperty Name="SensorBoardId" ColumnName="SensorBoardId" />
+                <ScalarProperty Name="EntranceId" ColumnName="EntranceId" />
+                <ScalarProperty Name="InSensorId" ColumnName="InSensorId" />
+                <ScalarProperty Name="OutSensorId" ColumnName="OutSensorId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Type">
+            <EntityTypeMapping TypeName="SwedaviaLabModel.Type">
+              <MappingFragment StoreEntitySet="Type">
+                <ScalarProperty Name="TypeId" ColumnName="TypeId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_Place_GetAllStructure" FunctionName="SwedaviaLabModel.Store.sp_Place_GetAllStructure">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="SwedaviaLabModel.sp_Place_GetAllStructure_Result">
+                <ScalarProperty Name="PlaceId" ColumnName="PlaceId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="TotalPeopleInside" ColumnName="TotalPeopleInside" />
+                <ScalarProperty Name="Capacity" ColumnName="Capacity" />
+                <ScalarProperty Name="LastService" ColumnName="LastService" />
+                <ScalarProperty Name="TypeId" ColumnName="TypeId" />
+                <ScalarProperty Name="TypeName" ColumnName="TypeName" />
+                <ScalarProperty Name="EntranceId" ColumnName="EntranceId" />
+                <ScalarProperty Name="EntranceName" ColumnName="EntranceName" />
+                <ScalarProperty Name="SensorBoardId" ColumnName="SensorBoardId" />
+                <ScalarProperty Name="InSensorId" ColumnName="InSensorId" />
+                <ScalarProperty Name="OutSensorId" ColumnName="OutSensorId" />
+                <ScalarProperty Name="SensorId" ColumnName="SensorId" />
+                <ScalarProperty Name="SensorName" ColumnName="SensorName" />
+                <ScalarProperty Name="PinTrigd" ColumnName="PinTrigd" />
+                <ScalarProperty Name="PinEchod" ColumnName="PinEchod" />
+                <ScalarProperty Name="InsideOne" ColumnName="InsideOne" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_SensorTransaction_Add" FunctionName="SwedaviaLabModel.Store.sp_SensorTransaction_Add" />
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

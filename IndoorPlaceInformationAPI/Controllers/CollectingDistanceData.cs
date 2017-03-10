@@ -1,4 +1,4 @@
-﻿using IndoorPlaceInformationAPI.Models;
+﻿
 using Microsoft.Azure.Devices;
 using System;
 using System.Collections.Generic;
@@ -10,6 +10,8 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace IndoorPlaceInformationAPI.Controllers
 {
+    /* ===== CODE COUNTING PEOPLE WITH RASPBERRY
+     
     internal static class CollectingDistanceData
     {
 
@@ -140,4 +142,6 @@ namespace IndoorPlaceInformationAPI.Controllers
         internal double Distance { get; }
         internal DateTime Created { get; }
     }
+
+    */
 }

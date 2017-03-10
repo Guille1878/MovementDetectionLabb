@@ -143,12 +143,12 @@ namespace MovementInOutDetection
                 //{
                 //    sensor.AddMesure();
                 //});
-                /*
+                
                 foreach (var sensor in sensors.Where(s => s.ArePinsInitialized))
                 {
                     sensor.AddMesure();
                 }
-                */
+                
 
             }
             catch (Exception ex)

@@ -30,13 +30,13 @@ namespace SandBoxConsole
                         SensorDistanceMeasures.Add(board.OutSensor, new List<DistanceMeasure>());
                     }
                 }
-
+                /*
                 Console.WriteLine("It started measuiring...");
 
                 SendCloudToDeviceMessageAsync("#START").Wait();
 
                 Task.Delay(1000);
-
+                */
 
                 var d2cPartitions = eventHubClient.GetRuntimeInformation().PartitionIds;
 
@@ -48,6 +48,8 @@ namespace SandBoxConsole
                     cts.Cancel();
                     Console.WriteLine("Exiting...");
                 };
+
+                Console.WriteLine("Ready. It is waiting for messages from Raspberry");
 
                 var tasks = new List<Task>();
                 foreach (string partition in d2cPartitions)
@@ -127,6 +129,7 @@ namespace SandBoxConsole
              //  var d2cPartitions = eventHubClient.GetRuntimeInformation().PartitionIds;
             queueClient = QueueClient.CreateFromConnectionString(queueConnectionString, queueName);
         }
+
         private static Sensor temporarySensor;
 
         private static Dictionary<Sensor, List<DistanceMeasure>> SensorDistanceMeasures = new Dictionary<Sensor, List<DistanceMeasure>>();

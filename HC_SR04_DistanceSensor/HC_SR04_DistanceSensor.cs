@@ -241,10 +241,12 @@ namespace HC_SR04_DistanceSensor
             IsSettingStandard = true;
         }
 
+        double duration = 0;
+        double reslut = 0;
         public double GetDistance()
         {
 
-            double reslut = -1;
+            reslut = -1;
 
             try
             {
@@ -257,13 +259,16 @@ namespace HC_SR04_DistanceSensor
 
                 Pin_trig.Write(GpioPinValue.Low);
 
-                double duration = PulseIn(Pin_echo);
+                duration = PulseIn(Pin_echo);
 
                 if (duration > -1)
                     reslut = duration * SensorMesuringSetting.DurationFactorForDistanceClaculation;
 
             }
-            catch {}
+            catch
+            {
+
+            }
 
             return reslut;
         }
