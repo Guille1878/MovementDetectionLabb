@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using IndoorPlaceInformationAPI;
+using Swashbuckle.Swagger.Annotations;
 
 namespace IndoorPlaceInformationAPI.Controllers
 {
@@ -17,6 +18,7 @@ namespace IndoorPlaceInformationAPI.Controllers
         private SwedaviaLabEntities db = new SwedaviaLabEntities();
 
         // GET: api/Places
+        [SwaggerOperation("GetAllPlaces")]
         public IQueryable<Place> GetPlace()
         {
             var vad =  db.Place.ToList();
@@ -24,6 +26,7 @@ namespace IndoorPlaceInformationAPI.Controllers
         }
 
         // GET: api/Places/5
+        [SwaggerOperation("GetPlace")]
         [ResponseType(typeof(Place))]
         public IHttpActionResult GetPlace(Guid id)
         {
@@ -36,7 +39,25 @@ namespace IndoorPlaceInformationAPI.Controllers
             return Ok(place);
         }
 
+        /// <summary>
+        /// Get how many people is inside a place
+        /// </summary>
+        /// <param name="id">Identity for a Place</param>
+        /// <returns>Returns only the number of people is inside the place</returns>
+        [SwaggerOperation("GetTotalPeopleInsideByPlaceId")]
+        [ResponseType(typeof(long))]
+        public IHttpActionResult GetTotalPeopleInsideByPlaceId(Guid id)
+        {
+            Place place = db.Place.Find(id);
+            if (place == null)
+            {
+                return NotFound();
+            }
+            return Ok(place.TotalPeopleInside);
+        }
+
         // PUT: api/Places/5
+        [SwaggerOperation("PutPlace")]
         [ResponseType(typeof(void))]
         public IHttpActionResult PutPlace(Guid id, Place place)
         {
@@ -72,6 +93,7 @@ namespace IndoorPlaceInformationAPI.Controllers
         }
 
         // POST: api/Places
+        [SwaggerOperation("PostPlace")]
         [ResponseType(typeof(Place))]
         public IHttpActionResult PostPlace(Place place)
         {
@@ -102,6 +124,7 @@ namespace IndoorPlaceInformationAPI.Controllers
         }
 
         // DELETE: api/Places/5
+        [SwaggerOperation("DeletePlace")]
         [ResponseType(typeof(Place))]
         public IHttpActionResult DeletePlace(Guid id)
         {

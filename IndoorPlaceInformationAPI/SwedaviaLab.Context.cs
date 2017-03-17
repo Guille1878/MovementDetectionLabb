@@ -149,5 +149,14 @@ namespace IndoorPlaceInformationAPI
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_upgraddiagrams");
         }
+    
+        public virtual int sp_Place_ResetCounter(Nullable<System.Guid> placeId)
+        {
+            var placeIdParameter = placeId.HasValue ?
+                new ObjectParameter("PlaceId", placeId) :
+                new ObjectParameter("PlaceId", typeof(System.Guid));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_Place_ResetCounter", placeIdParameter);
+        }
     }
 }

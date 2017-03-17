@@ -111,6 +111,9 @@
           </ReferentialConstraint>
         </Association>
         <Function Name="sp_Place_GetAllStructure" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="sp_Place_ResetCounter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="PlaceId" Type="uniqueidentifier" Mode="In" />
+        </Function>
         <Function Name="sp_SensorTransaction_Add" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="SensorId" Type="uniqueidentifier" Mode="In" />
         </Function>
@@ -320,6 +323,9 @@
           <Parameter Name="SensorId" Mode="In" Type="Guid" />
           </FunctionImport>
           <FunctionImport Name="sp_upgraddiagrams" />
+          <FunctionImport Name="sp_Place_ResetCounter">
+            <Parameter Name="PlaceId" Mode="In" Type="Guid" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="sp_helpdiagramdefinition_Result">
           <Property Type="Int32" Name="version" Nullable="true" />
@@ -431,6 +437,7 @@
             </ResultMapping>
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="sp_SensorTransaction_Add" FunctionName="SwedaviaLabModel.Store.sp_SensorTransaction_Add" />
+          <FunctionImportMapping FunctionImportName="sp_Place_ResetCounter" FunctionName="SwedaviaLabModel.Store.sp_Place_ResetCounter" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

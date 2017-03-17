@@ -30,16 +30,5 @@ namespace IndoorPlaceInformationAPI
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Entrance> Entrance { get; set; }
         public virtual Type Type { get; set; }
-
-        internal void PeoplePass(bool insideOne)
-        {
-            if (insideOne)
-                TotalPeopleInside++;
-            else
-            {
-                if (--TotalPeopleInside < 0)
-                    TotalPeopleInside = 0;
-            }
-        }
     }
 }
