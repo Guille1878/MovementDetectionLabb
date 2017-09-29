@@ -242,6 +242,7 @@
     <Content Include="SwedaviaLab.edmx.diagram">
       <DependentUpon>SwedaviaLab.edmx</DependentUpon>
     </Content>
+    <None Include="Properties\PublishProfiles\IndoorPlaceInformationAPI2 - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\IndoorPlaceInformationAPI2 - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
